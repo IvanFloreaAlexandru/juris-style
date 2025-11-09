@@ -18,7 +18,7 @@ export const Navbar = () => {
   const { language, setLanguage, t } = useLanguage();
 
   // 🔹 Funcția de schimbare limbă cu redirecționare între rute
-  const handleLanguageSwitch = (lang: string) => {
+  const handleLanguageSwitch = (lang: 'ro' | 'en') => {
     const currentPath = location.pathname;
 
     const routesMap: Record<string, string> = {
@@ -45,18 +45,19 @@ export const Navbar = () => {
     navigate(newPath);
   };
 
-  const navItems = [
-    { path: "/despre", label: t("Despre noi", "About Us") },
-    {
-      path: "/domenii-de-practica",
-      label: t("Domenii de practică", "Legal Services"),
-    },
-    {
-      path: "/noutati",
-      label: t("Noutăți legislative & Comentarii juridice", "News"),
-    },
-    { path: "/contact", label: t("Contact", "Contact") },
-  ];
+  const navItems = language === 'ro' 
+    ? [
+        { path: "/despre", label: "Despre noi" },
+        { path: "/domenii-de-practica", label: "Domenii de practică" },
+        { path: "/noutati", label: "Noutăți legislative & Comentarii juridice" },
+        { path: "/contact", label: "Contact" },
+      ]
+    : [
+        { path: "/about", label: "About Us" },
+        { path: "/legal-services", label: "Legal Services" },
+        { path: "/news", label: "News" },
+        { path: "/contact", label: "Contact" },
+      ];
 
   return (
     <nav className="fixed top-0 w-full bg-background/95 backdrop-blur-sm z-50 border-b border-border">
