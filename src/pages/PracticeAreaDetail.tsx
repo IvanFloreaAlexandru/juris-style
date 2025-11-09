@@ -1137,6 +1137,7 @@ export default function PracticeAreaDetail() {
 
   // Mapping URL slug -> cheia internă
   const slugs: Record<string, string> = {
+    // English slugs
     insolvency: "insolventa",
     arbitration: "arbitraj-executare",
     "civil-law": "drept-civil",
@@ -1153,9 +1154,16 @@ export default function PracticeAreaDetail() {
     "human-rights": "drepturile-omului-cedo",
     "criminal-law": "drept-penal",
     "public-procurement": "achizitii-publice",
+    // Romanian slugs (direct mapping)
+    "drept-civil": "drept-civil",
+    "drept-comercial": "drept-comercial",
+    "litigii": "litigii",
+    "drept-penal": "drept-penal",
+    "drept-administrativ": "drept-administrativ",
+    "proprietate-intelectuala": "proprietate-intelectuala",
   };
 
-  const key = id ? slugs[id] : null;
+  const key = id ? slugs[id] || id : null;
   const practiceArea = key ? practiceAreas[key] : null;
 
   if (!practiceArea) {
