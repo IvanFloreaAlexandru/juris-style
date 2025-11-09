@@ -1137,13 +1137,13 @@ export default function PracticeAreaDetail() {
 
   // Mapping URL slug -> cheia internă
   const slugs: Record<string, string> = {
+    insolvency: "insolventa",
+    arbitration: "arbitraj-executare",
     "civil-law": "drept-civil",
     "intellectual-property": "proprietate-intelectuala",
     "corporate-law": "drept-societar",
     "debt-recovery": "restructurare-recuperare",
-    insolvency: "insolventa",
     "banking-finance-law": "drept-financiar",
-    arbitration: "arbitraj-executare",
     "enforcement-procedures": "proceduri-executare-silita",
     "administrative-law": "drept-administrativ-fiscal",
     "competition-law": "drept-concurenta-ajutor",
