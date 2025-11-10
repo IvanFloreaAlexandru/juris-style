@@ -113,8 +113,9 @@ export default function Contact() {
                         {t("Adresă", "Address")}
                       </h3>
                       <p className="text-muted-foreground">
-                        Bd. Unirii nr. 10, Sector 3<br />
-                        București 030167, România
+                        Pictor Barbu Iscovescu 40,
+                        <br />
+                        et.1, ap.2, Sector 1, Bucuresti
                       </p>
                     </div>
                   </div>
@@ -128,9 +129,9 @@ export default function Contact() {
                         {t("Telefon", "Phone")}
                       </h3>
                       <p className="text-muted-foreground">
-                        +40 21 123 4567
+                        021 312 27 15
                         <br />
-                        +40 21 123 4568
+                        021 312 27 80
                       </p>
                     </div>
                   </div>
@@ -144,9 +145,7 @@ export default function Contact() {
                         {t("Email", "Email")}
                       </h3>
                       <p className="text-muted-foreground">
-                        contact@cabinetavocat.ro
-                        <br />
-                        office@cabinetavocat.ro
+                        office@frunza-asociatii.ro
                       </p>
                     </div>
                   </div>
