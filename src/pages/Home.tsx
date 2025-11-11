@@ -1,11 +1,12 @@
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Scale, Shield, Users, Award } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import heroImage from '@/assets/hero-bg.png';
 
 export default function Home() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen">
@@ -27,12 +28,14 @@ export default function Home() {
               'Trusted legal expertise for solving your legal problems'
             )}
           </p>
-          <Link to="/despre">
-            <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground gap-2">
-              {t('Descoperă mai mult', 'Learn More')}
-              <ArrowRight className="h-5 w-5" />
-            </Button>
-          </Link>
+          <Button 
+            size="lg" 
+            className="bg-accent hover:bg-accent/90 text-accent-foreground gap-2"
+            onClick={() => navigate(language === 'ro' ? '/despre' : '/about')}
+          >
+            {t('Descoperă mai mult', 'Learn More')}
+            <ArrowRight className="h-5 w-5" />
+          </Button>
         </div>
       </section>
 
@@ -104,12 +107,15 @@ export default function Home() {
               'Contact us today for a free consultation'
             )}
           </p>
-          <Link to="/contact">
-            <Button size="lg" variant="secondary" className="gap-2">
-              {t('Contactează-ne', 'Contact Us')}
-              <ArrowRight className="h-5 w-5" />
-            </Button>
-          </Link>
+          <Button 
+            size="lg" 
+            variant="secondary" 
+            className="gap-2"
+            onClick={() => navigate('/contact')}
+          >
+            {t('Contactează-ne', 'Contact Us')}
+            <ArrowRight className="h-5 w-5" />
+          </Button>
         </div>
       </section>
     </div>

@@ -6,6 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { Navbar } from "./components/Navbar";
 import { Footer } from "./components/Footer";
+import { RootRedirect } from "./components/RootRedirect";
+import { RouteGuard } from "./components/RouteGuard";
 import About from "./pages/About";
 import Lawyers from "./pages/Lawyers";
 import Services from "./pages/Services";
@@ -26,26 +28,31 @@ const App = () => {
           <Sonner />
           <BrowserRouter>
             <Navbar />
-            <Routes>
-              {/* Romanian routes */}
-              <Route path="/despre" element={<About />} />
-              <Route path="/avocati" element={<Lawyers />} />
-              <Route path="/domenii-de-practica" element={<Services />} />
-              <Route path="/domenii-de-practica/:id" element={<PracticeAreaDetail />} />
-              <Route path="/noutati" element={<News />} />
-              
-              {/* English routes */}
-              <Route path="/about" element={<About />} />
-              <Route path="/lawyers" element={<Lawyers />} />
-              <Route path="/legal-services" element={<Services />} />
-              <Route path="/legal-services/:id" element={<PracticeAreaDetail />} />
-              <Route path="/news" element={<News />} />
-              
-              {/* Common routes */}
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <RouteGuard>
+              <Routes>
+                {/* Root redirect */}
+                <Route path="/" element={<RootRedirect />} />
+                
+                {/* Romanian routes */}
+                <Route path="/despre" element={<About />} />
+                <Route path="/avocati" element={<Lawyers />} />
+                <Route path="/domenii-de-practica" element={<Services />} />
+                <Route path="/domenii-de-practica/:id" element={<PracticeAreaDetail />} />
+                <Route path="/noutati" element={<News />} />
+                
+                {/* English routes */}
+                <Route path="/about" element={<About />} />
+                <Route path="/lawyers" element={<Lawyers />} />
+                <Route path="/legal-services" element={<Services />} />
+                <Route path="/legal-services/:id" element={<PracticeAreaDetail />} />
+                <Route path="/news" element={<News />} />
+                
+                {/* Common routes */}
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </RouteGuard>
             <Footer />
           </BrowserRouter>
         </LanguageProvider>
