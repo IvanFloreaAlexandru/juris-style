@@ -93,6 +93,7 @@ const mockArticles: Article[] = [
 export const ArticlesProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  const [allArticles, setAllArticles] = useState<Article[]>(mockArticles);
   const [articles, setArticles] = useState<Article[]>(mockArticles);
   const [loading, setLoading] = useState(false);
 
@@ -103,20 +104,39 @@ export const ArticlesProvider: React.FC<{ children: React.ReactNode }> = ({
     search?: string;
   }) => {
     setLoading(true);
-    // Simulăm un delay de rețea
     await new Promise((resolve) => setTimeout(resolve, 300));
     
+    let filtered = [...allArticles];
+
+    if (filters?.category && filters.category !== "all") {
+      filtered = filtered.filter((a) => a.category === filters.category);
+    }
+    if (filters?.tag) {
+      filtered = filtered.filter((a) => a.tags.includes(filters.tag));
+    }
+    if (filters?.status && filters.status !== "all") {
+      filtered = filtered.filter((a) => a.status === filters.status);
+    }
+    if (filters?.search) {
+      const searchLower = filters.search.toLowerCase();
+      filtered = filtered.filter(
+        (a) =>
+          a.title.toLowerCase().includes(searchLower) ||
+          a.excerpt.toLowerCase().includes(searchLower)
+      );
+    }
+
+    setArticles(filtered);
     setLoading(false);
   };
 
   const getArticle = (id: string) => {
-    return articles.find((article) => article.id === id);
+    return allArticles.find((article) => article.id === id);
   };
 
   const createArticle = async (
     article: Omit<Article, "id" | "createdAt" | "updatedAt">
   ): Promise<Article> => {
-    // Simulăm un delay de rețea
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     const newArticle: Article = {
@@ -128,15 +148,15 @@ export const ArticlesProvider: React.FC<{ children: React.ReactNode }> = ({
         article.status === "published" ? new Date().toISOString() : undefined,
     };
 
+    setAllArticles((prev) => [newArticle, ...prev]);
     setArticles((prev) => [newArticle, ...prev]);
     return newArticle;
   };
 
   const updateArticle = async (id: string, article: Partial<Article>) => {
-    // Simulăm un delay de rețea
     await new Promise((resolve) => setTimeout(resolve, 500));
 
-    setArticles((prev) =>
+    const updateFn = (prev: Article[]) =>
       prev.map((a) => {
         if (a.id === id) {
           return {
@@ -150,14 +170,16 @@ export const ArticlesProvider: React.FC<{ children: React.ReactNode }> = ({
           };
         }
         return a;
-      })
-    );
+      });
+
+    setAllArticles(updateFn);
+    setArticles(updateFn);
   };
 
   const deleteArticle = async (id: string) => {
-    // Simulăm un delay de rețea
     await new Promise((resolve) => setTimeout(resolve, 500));
 
+    setAllArticles((prev) => prev.filter((a) => a.id !== id));
     setArticles((prev) => prev.filter((a) => a.id !== id));
   };
 

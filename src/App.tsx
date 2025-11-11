@@ -20,7 +20,6 @@ import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import PracticeAreaDetail from "./pages/PracticeAreaDetail";
 import { ArticleDetail } from "./pages/ArticleDetail";
-import { AdminLogin } from "./pages/admin/AdminLogin";
 import { AdminArticles } from "./pages/admin/AdminArticles";
 import { AdminArticleNew } from "./pages/admin/AdminArticleNew";
 import { AdminArticleEdit } from "./pages/admin/AdminArticleEdit";
@@ -39,7 +38,6 @@ const App = () => {
               <BrowserRouter>
                 <Routes>
                   {/* Admin routes (no navbar/footer) */}
-                  <Route path="/admin/login" element={<AdminLogin />} />
                   <Route path="/admin" element={<AdminLayout />}>
                     <Route index element={<AdminArticles />} />
                     <Route path="articles" element={<AdminArticles />} />

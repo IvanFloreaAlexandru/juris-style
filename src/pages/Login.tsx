@@ -1,5 +1,7 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -10,16 +12,41 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Lock } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Login() {
   const { t } = useLanguage();
+  const navigate = useNavigate();
+  const { login, isAuthenticated } = useAuth();
+  const { toast } = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Redirect if already logged in
+  if (isAuthenticated) {
+    navigate("/admin/articles");
+    return null;
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login logic
-    console.log("Login attempt", { email, password });
+    setLoading(true);
+    
+    const success = await login(email, password);
+    
+    if (success) {
+      toast({ title: t("Autentificare reușită", "Login successful") });
+      navigate("/admin/articles");
+    } else {
+      toast({
+        title: t("Eroare", "Error"),
+        description: t("Email sau parolă incorectă", "Invalid email or password"),
+        variant: "destructive",
+      });
+    }
+    
+    setLoading(false);
   };
 
   return (
@@ -77,9 +104,13 @@ export default function Login() {
               </a>
             </div>
 
-            <Button type="submit" size="lg" className="w-full">
-              {t("Autentificare", "Sign In")}
+            <Button type="submit" size="lg" className="w-full" disabled={loading}>
+              {loading ? t("Se autentifică...", "Signing in...") : t("Autentificare", "Sign In")}
             </Button>
+            
+            <div className="text-center text-sm text-muted-foreground mt-4">
+              {t("Credențiale admin: admin@site.com / admin123", "Admin credentials: admin@site.com / admin123")}
+            </div>
           </form>
         </CardContent>
       </Card>

@@ -73,7 +73,7 @@ export const AdminLayout: React.FC = () => {
   const { isAuthenticated } = useAuth();
 
   if (!isAuthenticated) {
-    return <Navigate to="/admin/login" replace />;
+    return <Navigate to="/login" replace />;
   }
 
   return (
