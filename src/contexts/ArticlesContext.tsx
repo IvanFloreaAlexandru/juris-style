@@ -104,29 +104,8 @@ export const ArticlesProvider: React.FC<{ children: React.ReactNode }> = ({
   }) => {
     setLoading(true);
     // Simulăm un delay de rețea
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    let filtered = [...articles];
-
-    if (filters?.category && filters.category !== "all") {
-      filtered = filtered.filter((a) => a.category === filters.category);
-    }
-    if (filters?.tag) {
-      filtered = filtered.filter((a) => a.tags.includes(filters.tag));
-    }
-    if (filters?.status && filters.status !== "all") {
-      filtered = filtered.filter((a) => a.status === filters.status);
-    }
-    if (filters?.search) {
-      const searchLower = filters.search.toLowerCase();
-      filtered = filtered.filter(
-        (a) =>
-          a.title.toLowerCase().includes(searchLower) ||
-          a.excerpt.toLowerCase().includes(searchLower)
-      );
-    }
-
-    setArticles(filtered);
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    
     setLoading(false);
   };
 
