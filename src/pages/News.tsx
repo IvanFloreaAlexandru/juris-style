@@ -6,6 +6,7 @@ import { Calendar, User } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function News() {
   const { t, language } = useLanguage();
@@ -38,7 +39,25 @@ export default function News() {
       <section className="py-20">
         <div className="container mx-auto px-4">
           {loading ? (
-            <div className="text-center py-16">Se încarcă...</div>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <Card key={i} className="overflow-hidden">
+                  <Skeleton className="w-full h-48" />
+                  <CardHeader>
+                    <Skeleton className="h-6 w-20 mb-2" />
+                    <Skeleton className="h-8 w-3/4 mb-2" />
+                    <Skeleton className="h-4 w-1/2" />
+                    <Skeleton className="h-4 w-1/3 mt-1" />
+                  </CardHeader>
+                  <CardContent>
+                    <Skeleton className="h-4 w-full mb-2" />
+                    <Skeleton className="h-4 w-full mb-2" />
+                    <Skeleton className="h-4 w-2/3 mb-4" />
+                    <Skeleton className="h-9 w-28" />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           ) : publishedArticles.length === 0 ? (
             <div className="text-center py-16">
               <p className="text-muted-foreground">Nu există articole publicate</p>
@@ -46,13 +65,19 @@ export default function News() {
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {publishedArticles.map((article) => (
-                <Card key={article.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                <Card key={article.id} className="overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group flex flex-col h-full">
                   {article.coverImage && (
-                    <img src={article.coverImage} alt={article.title} className="w-full h-48 object-cover" />
+                    <div className="overflow-hidden h-48">
+                      <img 
+                        src={article.coverImage} 
+                        alt={article.title} 
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                      />
+                    </div>
                   )}
-                  <CardHeader>
+                  <CardHeader className="flex-1">
                     <Badge className="mb-2 w-fit">{article.category}</Badge>
-                    <CardTitle className="font-serif">{article.title}</CardTitle>
+                    <CardTitle className="font-serif line-clamp-2">{article.title}</CardTitle>
                     <CardDescription className="space-y-1">
                       <div className="flex items-center gap-2 text-xs">
                         <Calendar className="h-3 w-3" />
@@ -66,7 +91,7 @@ export default function News() {
                   </CardHeader>
                   <CardContent>
                     <p className="text-muted-foreground mb-4 line-clamp-3">{article.excerpt}</p>
-                    <Button variant="outline" size="sm" asChild>
+                    <Button variant="outline" size="sm" asChild className="group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
                       <Link to={`${language === 'ro' ? '/noutati' : '/news'}/${article.slug}`}>
                         {t('Citește mai mult', 'Read More')}
                       </Link>

@@ -251,34 +251,34 @@ export default function DomeniiDePractica() {
             {services.map((service, idx) => (
               <Card
                 key={idx}
-                className="hover:shadow-lg transition-shadow cursor-pointer overflow-hidden"
+                className="cursor-pointer transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 overflow-hidden flex flex-col sm:flex-row h-64 group"
                 onClick={() => navigate(service.path)}
               >
-                <div className="flex flex-col sm:flex-row h-full">
-                  <div className="sm:w-1/2 h-48 sm:h-auto">
-                    <img
-                      src={service.image}
-                      alt={service.title}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="sm:w-1/2 flex flex-col">
-                    <CardHeader className="flex-grow-0">
-                      <div className="flex items-center gap-3 mb-2">
-                        <div className="p-2 bg-primary/10 rounded-lg flex-shrink-0">
-                          <service.icon className="h-5 w-5 text-primary" />
-                        </div>
-                        <CardTitle className="text-base font-serif leading-tight">
-                          {service.title}
-                        </CardTitle>
+                {/* Image container - left half */}
+                <div className="sm:w-1/2 overflow-hidden relative h-48 sm:h-full">
+                  <img
+                    src={service.image}
+                    alt={service.title}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </div>
+
+                {/* Content container - right half */}
+                <div className="sm:w-1/2 flex flex-col">
+                  <CardHeader className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="p-2 bg-primary/10 rounded-lg flex-shrink-0 transition-transform duration-300 group-hover:scale-110">
+                        <service.icon className="h-5 w-5 text-primary" />
                       </div>
-                    </CardHeader>
-                    <CardContent className="flex-grow flex items-start pt-0">
-                      <CardDescription className="text-sm leading-relaxed">
-                        {service.description}
-                      </CardDescription>
-                    </CardContent>
-                  </div>
+                      <CardTitle className="text-base font-serif leading-tight line-clamp-2">
+                        {service.title}
+                      </CardTitle>
+                    </div>
+                    <CardDescription className="text-sm leading-relaxed line-clamp-3">
+                      {service.description}
+                    </CardDescription>
+                  </CardHeader>
                 </div>
               </Card>
             ))}
