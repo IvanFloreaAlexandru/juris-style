@@ -9,7 +9,10 @@ import {
 } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 
+import officeImage1 from "@/assets/office-1.jpeg";
+import officeImage2 from "@/assets/office-2.jpeg";
 import officeImage3 from "@/assets/office-4.jpg";
+import officeImage4 from "@/assets/office-12.jpeg";
 
 export default function DomeniiDePractica() {
   const { language, t } = useLanguage();
@@ -27,6 +30,7 @@ export default function DomeniiDePractica() {
         "Contracts, civil litigation, forced executions, debt recovery"
       ),
       path: `${basePath}/${language === "ro" ? "drept-civil" : "civil-law"}`,
+      image: officeImage1,
     },
     {
       icon: Briefcase,
@@ -38,6 +42,7 @@ export default function DomeniiDePractica() {
       path: `${basePath}/${
         language === "ro" ? "proprietate-intelectuala" : "intellectual-property"
       }`,
+      image: officeImage2,
     },
     {
       icon: Home,
@@ -49,6 +54,7 @@ export default function DomeniiDePractica() {
       path: `${basePath}/${
         language === "ro" ? "drept-societar" : "corporate-law"
       }`,
+      image: officeImage3,
     },
     {
       icon: Users,
@@ -60,6 +66,7 @@ export default function DomeniiDePractica() {
       path: `${basePath}/${
         language === "ro" ? "restructurare-recuperare" : "debt-recovery"
       }`,
+      image: officeImage4,
     },
     {
       icon: Gavel,
@@ -69,6 +76,7 @@ export default function DomeniiDePractica() {
         "Criminal defense, victim representation, bail"
       ),
       path: `${basePath}/${language === "ro" ? "insolventa" : "insolvency"}`,
+      image: officeImage1,
     },
     {
       icon: Building,
@@ -83,6 +91,7 @@ export default function DomeniiDePractica() {
       path: `${basePath}/${
         language === "ro" ? "drept-financiar" : "banking-finance-law"
       }`,
+      image: officeImage2,
     },
     {
       icon: Building,
@@ -94,6 +103,7 @@ export default function DomeniiDePractica() {
       path: `${basePath}/${
         language === "ro" ? "arbitraj-executare" : "arbitration"
       }`,
+      image: officeImage3,
     },
     {
       icon: Building,
@@ -107,6 +117,7 @@ export default function DomeniiDePractica() {
           ? "proceduri-executare-silita"
           : "enforcement-procedures"
       }`,
+      image: officeImage4,
     },
     {
       icon: Building,
@@ -121,6 +132,7 @@ export default function DomeniiDePractica() {
       path: `${basePath}/${
         language === "ro" ? "drept-administrativ-fiscal" : "administrative-law"
       }`,
+      image: officeImage1,
     },
     {
       icon: Building,
@@ -132,6 +144,7 @@ export default function DomeniiDePractica() {
       path: `${basePath}/${
         language === "ro" ? "drept-concurenta-ajutor" : "competition-law"
       }`,
+      image: officeImage2,
     },
     {
       icon: Building,
@@ -144,6 +157,7 @@ export default function DomeniiDePractica() {
         "Employment contracts, dismissals, discrimination, harassment"
       ),
       path: `${basePath}/${language === "ro" ? "drept-munca" : "labor-law"}`,
+      image: officeImage3,
     },
     {
       icon: Building,
@@ -155,6 +169,7 @@ export default function DomeniiDePractica() {
       path: `${basePath}/${
         language === "ro" ? "protectia-consumatorului" : "consumer-protection"
       }`,
+      image: officeImage4,
     },
     {
       icon: Building,
@@ -166,6 +181,7 @@ export default function DomeniiDePractica() {
       path: `${basePath}/${
         language === "ro" ? "drept-mediu" : "environmental-law"
       }`,
+      image: officeImage1,
     },
     {
       icon: Building,
@@ -177,6 +193,7 @@ export default function DomeniiDePractica() {
       path: `${basePath}/${
         language === "ro" ? "drepturile-omului-cedo" : "human-rights"
       }`,
+      image: officeImage2,
     },
     {
       icon: Building,
@@ -186,6 +203,7 @@ export default function DomeniiDePractica() {
         "Criminal defense, victim representation"
       ),
       path: `${basePath}/${language === "ro" ? "drept-penal" : "criminal-law"}`,
+      image: officeImage3,
     },
     {
       icon: Building,
@@ -197,6 +215,7 @@ export default function DomeniiDePractica() {
       path: `${basePath}/${
         language === "ro" ? "achizitii-publice" : "public-procurement"
       }`,
+      image: officeImage4,
     },
   ];
 
@@ -228,24 +247,39 @@ export default function DomeniiDePractica() {
       {/* Services */}
       <section className="py-20">
         <div className="w-[80%] mx-auto px-4">
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-8">
             {services.map((service, idx) => (
               <Card
                 key={idx}
-                className="hover:shadow-lg transition-shadow cursor-pointer"
+                className="hover:shadow-lg transition-shadow cursor-pointer overflow-hidden"
                 onClick={() => navigate(service.path)}
               >
-                <CardHeader>
-                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                    <service.icon className="h-6 w-6 text-primary" />
+                <div className="flex flex-col sm:flex-row h-full">
+                  <div className="sm:w-1/2 h-48 sm:h-auto">
+                    <img
+                      src={service.image}
+                      alt={service.title}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
-                  <CardTitle className="font-serif">{service.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="text-base">
-                    {service.description}
-                  </CardDescription>
-                </CardContent>
+                  <div className="sm:w-1/2 flex flex-col">
+                    <CardHeader className="flex-grow-0">
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="p-2 bg-primary/10 rounded-lg flex-shrink-0">
+                          <service.icon className="h-5 w-5 text-primary" />
+                        </div>
+                        <CardTitle className="text-base font-serif leading-tight">
+                          {service.title}
+                        </CardTitle>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="flex-grow flex items-start pt-0">
+                      <CardDescription className="text-sm leading-relaxed">
+                        {service.description}
+                      </CardDescription>
+                    </CardContent>
+                  </div>
+                </div>
               </Card>
             ))}
           </div>
