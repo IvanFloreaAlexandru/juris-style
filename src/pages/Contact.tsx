@@ -128,11 +128,7 @@ export default function Contact() {
                       <h3 className="font-semibold mb-1">
                         {t("Telefon", "Phone")}
                       </h3>
-                      <p className="text-muted-foreground">
-                        021 312 27 15
-                        <br />
-                        021 312 27 80
-                      </p>
+                      <p className="text-muted-foreground">+40 723 360 063</p>
                     </div>
                   </div>
 
@@ -160,11 +156,9 @@ export default function Contact() {
                       </h3>
                       <p className="text-muted-foreground">
                         {t(
-                          "Luni - Vineri: 09:00 - 18:00",
-                          "Monday - Friday: 09:00 - 18:00"
+                          "Luni - Vineri: 08:00 - 19:00",
+                          "Monday - Friday: 08:00 - 19:00"
                         )}
-                        <br />
-                        {t("Sâmbătă: 10:00 - 14:00", "Saturday: 10:00 - 14:00")}
                       </p>
                     </div>
                   </div>
@@ -176,12 +170,13 @@ export default function Contact() {
                 <CardContent className="p-0">
                   <div className="w-full h-64 bg-muted rounded-lg overflow-hidden">
                     <iframe
-                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2849.0864436227384!2d26.10270631564494!3d44.427634179101786!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x40b1ff4770adb5b7%3A0x58147f39579fe6fa!2sBulevardul%20Unirii%2C%20Bucure%C8%99ti!5e0!3m2!1sen!2sro!4v1647000000000!5m2!1sen!2sro"
+                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2849.738104706734!2d26.091927776639037!3d44.41516497107234!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x40b1ff5219e2cd7b%3A0xe2cd88b231b0a448!2sStrada%20Pictor%20Barbu%20Iscovescu%2040%2C%20Bucure%C8%99ti%20011577!5e0!3m2!1sen!2sro!4v1731618710000!5m2!1sen!2sro"
                       width="100%"
                       height="100%"
                       style={{ border: 0 }}
                       allowFullScreen
                       loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
                     ></iframe>
                   </div>
                 </CardContent>

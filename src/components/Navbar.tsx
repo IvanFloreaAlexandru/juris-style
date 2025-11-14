@@ -1,14 +1,16 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, X, Globe } from "lucide-react";
+import { Menu, X, Globe, LogOut, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { SearchBar } from "@/components/SearchBar";
 import logoImage from "../assets/logo.png";
 
@@ -17,8 +19,8 @@ export const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { language, setLanguage, t } = useLanguage();
+  const { isAuthenticated, logout } = useAuth();
 
-  // 🔹 Funcția de schimbare limbă cu redirecționare între rute
   const handleLanguageSwitch = (lang: "ro" | "en") => {
     const currentPath = location.pathname;
 
@@ -35,13 +37,11 @@ export const Navbar = () => {
 
     let newPath = currentPath;
 
-    // Caută echivalența între rutele RO ↔ EN
     for (const [ro, en] of Object.entries(routesMap)) {
       if (lang === "en" && currentPath === ro) newPath = en;
       if (lang === "ro" && currentPath === en) newPath = ro;
     }
 
-    // Actualizează limba în context și navighează la ruta echivalentă
     setLanguage(lang);
     navigate(newPath);
   };
@@ -63,6 +63,11 @@ export const Navbar = () => {
           { path: "/news", label: "News" },
           { path: "/contact", label: "Contact" },
         ];
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
 
   return (
     <nav className="fixed top-0 w-full bg-background/95 backdrop-blur-sm z-50 border-b border-border">
@@ -102,7 +107,7 @@ export const Navbar = () => {
             <SearchBar />
           </div>
 
-          {/* Right Side - Language & Login */}
+          {/* Right Side - Language & Auth */}
           <div className="flex items-center space-x-4">
             {/* Language Selector */}
             <DropdownMenu>
@@ -124,16 +129,42 @@ export const Navbar = () => {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* Login Button */}
-            <Link to="/login">
-              <Button
-                variant="default"
-                size="sm"
-                className="hidden sm:inline-flex"
-              >
-                {t("Login", "Login")}
-              </Button>
-            </Link>
+            {/* Auth Section */}
+            {isAuthenticated ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="default"
+                    size="sm"
+                    className="hidden sm:inline-flex gap-2"
+                  >
+                    <Settings className="h-4 w-4" />
+                    {t("Admin", "Admin")}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="bg-popover">
+                  <DropdownMenuItem onClick={() => navigate("/admin/articles")}>
+                    <Settings className="h-4 w-4 mr-2" />
+                    {t("Panou Admin", "Admin Panel")}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogout}>
+                    <LogOut className="h-4 w-4 mr-2" />
+                    {t("Logout", "Logout")}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Link to="/login">
+                <Button
+                  variant="default"
+                  size="sm"
+                  className="hidden sm:inline-flex"
+                >
+                  {t("Login", "Login")}
+                </Button>
+              </Link>
+            )}
 
             {/* Mobile Menu Button */}
             <button
@@ -167,13 +198,37 @@ export const Navbar = () => {
                   {item.label}
                 </Link>
               ))}
-              <Link
-                to="/login"
-                onClick={() => setIsOpen(false)}
-                className="px-4 py-3 rounded-md text-sm font-medium text-foreground hover:text-primary hover:bg-secondary/50"
-              >
-                {t("Login", "Login")}
-              </Link>
+
+              {isAuthenticated ? (
+                <>
+                  <Link
+                    to="/admin/articles"
+                    onClick={() => setIsOpen(false)}
+                    className="px-4 py-3 rounded-md text-sm font-medium text-foreground hover:text-primary hover:bg-secondary/50 flex items-center"
+                  >
+                    <Settings className="h-4 w-4 mr-2" />
+                    {t("Panou Admin", "Admin Panel")}
+                  </Link>
+                  <button
+                    onClick={() => {
+                      setIsOpen(false);
+                      handleLogout();
+                    }}
+                    className="px-4 py-3 rounded-md text-sm font-medium text-foreground hover:text-primary hover:bg-secondary/50 text-left flex items-center"
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    {t("Logout", "Logout")}
+                  </button>
+                </>
+              ) : (
+                <Link
+                  to="/login"
+                  onClick={() => setIsOpen(false)}
+                  className="px-4 py-3 rounded-md text-sm font-medium text-foreground hover:text-primary hover:bg-secondary/50"
+                >
+                  {t("Login", "Login")}
+                </Link>
+              )}
             </div>
           </div>
         )}

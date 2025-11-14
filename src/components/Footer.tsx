@@ -19,7 +19,7 @@ export const Footer = () => {
           {/* About */}
           <div>
             <h3 className="font-serif font-bold text-lg mb-4">
-              {t("Frunză-Asociații", "Law Firm")}
+              {t("Frunză & Asociații", "Law Firm")}
             </h3>
             <p className="text-sm text-primary-foreground/80">
               {t(
@@ -76,15 +76,17 @@ export const Footer = () => {
             <ul className="space-y-3">
               <li className="flex items-start gap-2 text-sm text-primary-foreground/80">
                 <MapPin className="h-4 w-4 mt-1 flex-shrink-0" />
-                <span>Bd. Unirii nr. 10, București, România</span>
+                <span>
+                  Pictor Barbu Iscovescu 40, et.1, ap.2, Sector 1, Bucuresti
+                </span>
               </li>
               <li className="flex items-center gap-2 text-sm text-primary-foreground/80">
                 <Phone className="h-4 w-4 flex-shrink-0" />
-                <span>+40 21 123 4567</span>
+                <span>+40 723 360 063</span>
               </li>
               <li className="flex items-center gap-2 text-sm text-primary-foreground/80">
                 <Mail className="h-4 w-4 flex-shrink-0" />
-                <span>contact@cabinetavocat.ro</span>
+                <span>office@frunza-asociatii.ro</span>
               </li>
             </ul>
           </div>
