@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState } from "react";
+import { createArticleAPI } from "@/lib/api";
+import { toast } from "@/hooks/use-toast";
 
 export interface Article {
   id: string;
@@ -137,20 +139,47 @@ export const ArticlesProvider: React.FC<{ children: React.ReactNode }> = ({
   const createArticle = async (
     article: Omit<Article, "id" | "createdAt" | "updatedAt">
   ): Promise<Article> => {
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    try {
+      // Prepare data for backend
+      const articleData = {
+        title: article.title,
+        slug: article.slug,
+        category: article.category,
+        tags: article.tags.join(", "),
+        extras: article.excerpt || "",
+        cover_image: article.coverImage || "",
+        content: article.content,
+      };
 
-    const newArticle: Article = {
-      ...article,
-      id: Date.now().toString(),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      publishedAt:
-        article.status === "published" ? new Date().toISOString() : undefined,
-    };
+      // Call backend API
+      const response = await createArticleAPI(articleData);
+      
+      // Create article object for local state
+      const newArticle: Article = {
+        ...article,
+        id: Date.now().toString(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        publishedAt: article.status === "published" ? new Date().toISOString() : undefined,
+      };
 
-    setAllArticles((prev) => [newArticle, ...prev]);
-    setArticles((prev) => [newArticle, ...prev]);
-    return newArticle;
+      setAllArticles((prev) => [newArticle, ...prev]);
+      setArticles((prev) => [newArticle, ...prev]);
+      
+      toast({
+        title: "Succes",
+        description: `Articolul a fost creat și publicat pe server: ${response.url}`,
+      });
+      
+      return newArticle;
+    } catch (error) {
+      toast({
+        title: "Eroare",
+        description: error instanceof Error ? error.message : "Nu s-a putut crea articolul",
+        variant: "destructive",
+      });
+      throw error;
+    }
   };
 
   const updateArticle = async (id: string, article: Partial<Article>) => {

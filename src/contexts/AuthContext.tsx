@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { loginAPI, removeToken, getToken } from "@/lib/api";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -19,57 +20,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     const storedUser = localStorage.getItem("admin_user");
-    if (storedUser) {
+    const token = getToken();
+    if (storedUser && token) {
       setUser(JSON.parse(storedUser));
       setIsAuthenticated(true);
     }
   }, []);
 
-  /* const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (email: string, password: string): Promise<boolean> => {
     try {
-      // TODO: Replace with your Python API endpoint
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (response.ok) {
-        const userData = await response.json();
+      const response = await loginAPI(email, password);
+      
+      if (response.access_token) {
+        const userData = { email, name: "Administrator" };
         setUser(userData);
         setIsAuthenticated(true);
         localStorage.setItem("admin_user", JSON.stringify(userData));
         return true;
       }
+      
       return false;
     } catch (error) {
       console.error("Login error:", error);
       return false;
     }
   };
-*/
-  const login = async (email: string, password: string): Promise<boolean> => {
-    // Date hardcodate
-    const adminEmail = "admin@site.com";
-    const adminPassword = "admin123";
-
-    if (email === adminEmail && password === adminPassword) {
-      const userData = { email, name: "Administrator" };
-
-      setUser(userData);
-      setIsAuthenticated(true);
-      localStorage.setItem("admin_user", JSON.stringify(userData));
-
-      return true;
-    }
-
-    return false;
-  };
 
   const logout = () => {
     setUser(null);
     setIsAuthenticated(false);
     localStorage.removeItem("admin_user");
+    removeToken();
   };
 
   return (
