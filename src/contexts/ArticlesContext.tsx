@@ -1,5 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
-import { createArticleAPI } from "@/lib/api";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import { toast } from "@/hooks/use-toast";
 
 export interface Article {
@@ -16,6 +15,7 @@ export interface Article {
   createdAt: string;
   updatedAt: string;
   publishedAt?: string;
+  url?: string;
 }
 
 interface ArticlesContextType {
@@ -39,65 +39,81 @@ const ArticlesContext = createContext<ArticlesContextType | undefined>(
   undefined
 );
 
-// Date mock inițiale
-const mockArticles: Article[] = [
-  {
-    id: "1",
-    title: "Noul Cod Civil - Modificări esențiale în 2024",
-    slug: "noul-cod-civil-modificari-esentiale-2024",
-    content:
-      "<h2>Introducere</h2><p>Codul Civil a suferit modificări importante care afectează relațiile contractuale...</p>",
-    excerpt:
-      "Modificările aduse Codului Civil în 2024 aduc schimbări importante în dreptul contractelor.",
-    category: "Noutăți Legislative",
-    tags: ["cod civil", "contracte", "legislație"],
-    status: "published",
-    author: "Admin",
-    coverImage:
-      "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800",
-    createdAt: "2024-01-15T10:00:00Z",
-    updatedAt: "2024-01-15T10:00:00Z",
-    publishedAt: "2024-01-15T10:00:00Z",
-  },
-  {
-    id: "2",
-    title: "Jurisprudență CJUE: Hotărâri recente în materie civilă",
-    slug: "jurisprudenta-cjue-hotarari-recente-materie-civila",
-    content:
-      "<p>Curtea de Justiție a Uniunii Europene a pronunțat mai multe hotărâri...</p>",
-    excerpt:
-      "Analiză detaliată a celor mai recente hotărâri CJUE în materie civilă.",
-    category: "Jurisprudență",
-    tags: ["CJUE", "drept civil", "hotărâri"],
-    status: "published",
-    author: "Admin",
-    createdAt: "2024-02-01T14:30:00Z",
-    updatedAt: "2024-02-01T14:30:00Z",
-    publishedAt: "2024-02-01T14:30:00Z",
-  },
-  {
-    id: "3",
-    title: "Draft: Ghid practic pentru procedura succesorală",
-    slug: "ghid-practic-procedura-succesorala",
-    content:
-      "<p>Un ghid complet pentru înțelegerea procedurii succesorale...</p>",
-    excerpt:
-      "Ghid detaliat despre toate etapele procedurii succesorale în România.",
-    category: "Practică",
-    tags: ["succesiuni", "procedură", "ghid"],
-    status: "draft",
-    author: "Admin",
-    createdAt: "2024-03-10T09:00:00Z",
-    updatedAt: "2024-03-10T09:00:00Z",
-  },
-];
+const API_BASE_URL = import.meta.env.VITE_API_URL?.replace(/\/$/, "") || "";
+
+// Tipul răspunsului API pentru creare articol
+interface CreateArticleResponse {
+  status: string;
+  file: string;
+  url: string;
+  article?: Article; // optional pentru backend nou
+}
+
+// Exemplu funcție API (poți înlocui cu implementarea ta)
+const createArticleAPI = async (data: any): Promise<CreateArticleResponse> => {
+  const res = await fetch(`${API_BASE_URL}/articles`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  return res.json();
+};
 
 export const ArticlesProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [allArticles, setAllArticles] = useState<Article[]>(mockArticles);
-  const [articles, setArticles] = useState<Article[]>(mockArticles);
-  const [loading, setLoading] = useState(false);
+  const [allArticles, setAllArticles] = useState<Article[]>([]);
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadArticlesFromAPI();
+  }, []);
+
+  const loadArticlesFromAPI = async () => {
+    setLoading(true);
+    try {
+      console.log("🔄 Loading articles from API...");
+      const response = await fetch(`${API_BASE_URL}/articles`);
+      if (!response.ok)
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      const data = await response.json();
+      const fetchedArticles = data.articles || [];
+
+      const normalizedArticles: Article[] = fetchedArticles.map(
+        (article: any) => ({
+          id: String(article.id),
+          title: article.title,
+          slug: article.slug,
+          content: article.content,
+          excerpt: article.excerpt || article.extras || "",
+          category: article.category,
+          tags: Array.isArray(article.tags) ? article.tags : [],
+          status: article.status || "published",
+          author: article.author || "Admin",
+          coverImage: article.coverImage || article.cover_image,
+          createdAt: article.createdAt,
+          updatedAt: article.updatedAt,
+          publishedAt: article.publishedAt,
+          url: article.url,
+        })
+      );
+
+      setAllArticles(normalizedArticles);
+      setArticles(normalizedArticles);
+
+      console.log(`✅ Loaded ${normalizedArticles.length} articles from API`);
+    } catch (error) {
+      console.error("❌ Failed to load articles:", error);
+      toast({
+        title: "Avertisment",
+        description: "Nu s-au putut încărca articolele de pe server",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchArticles = async (filters?: {
     category?: string;
@@ -106,8 +122,8 @@ export const ArticlesProvider: React.FC<{ children: React.ReactNode }> = ({
     search?: string;
   }) => {
     setLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
     let filtered = [...allArticles];
 
     if (filters?.category && filters.category !== "all") {
@@ -132,15 +148,13 @@ export const ArticlesProvider: React.FC<{ children: React.ReactNode }> = ({
     setLoading(false);
   };
 
-  const getArticle = (id: string) => {
-    return allArticles.find((article) => article.id === id);
-  };
+  const getArticle = (id: string) =>
+    allArticles.find((article) => article.id === id);
 
   const createArticle = async (
     article: Omit<Article, "id" | "createdAt" | "updatedAt">
   ): Promise<Article> => {
     try {
-      // Prepare data for backend
       const articleData = {
         title: article.title,
         slug: article.slug,
@@ -151,31 +165,47 @@ export const ArticlesProvider: React.FC<{ children: React.ReactNode }> = ({
         content: article.content,
       };
 
-      // Call backend API
-      const response = await createArticleAPI(articleData);
-      
-      // Create article object for local state
-      const newArticle: Article = {
-        ...article,
-        id: Date.now().toString(),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        publishedAt: article.status === "published" ? new Date().toISOString() : undefined,
-      };
+      const response: CreateArticleResponse = await createArticleAPI(
+        articleData
+      );
 
+      let newArticle: Article;
+
+      if (response.article) {
+        // backend nou
+        newArticle = { ...response.article };
+      } else {
+        // backend vechi
+        newArticle = {
+          ...article,
+          id: Date.now().toString(),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          publishedAt:
+            article.status === "published"
+              ? new Date().toISOString()
+              : undefined,
+          url: response.url,
+        };
+      }
+
+      // Adaugă în state
       setAllArticles((prev) => [newArticle, ...prev]);
       setArticles((prev) => [newArticle, ...prev]);
-      
+
       toast({
         title: "Succes",
-        description: `Articolul a fost creat și publicat pe server: ${response.url}`,
+        description: `Articolul a fost publicat: ${response.url}`,
       });
-      
+
       return newArticle;
     } catch (error) {
       toast({
         title: "Eroare",
-        description: error instanceof Error ? error.message : "Nu s-a putut crea articolul",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Nu s-a putut crea articolul",
         variant: "destructive",
       });
       throw error;
@@ -231,8 +261,7 @@ export const ArticlesProvider: React.FC<{ children: React.ReactNode }> = ({
 
 export const useArticles = () => {
   const context = useContext(ArticlesContext);
-  if (!context) {
+  if (!context)
     throw new Error("useArticles must be used within ArticlesProvider");
-  }
   return context;
 };
