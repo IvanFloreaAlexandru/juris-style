@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
@@ -21,6 +22,7 @@ import {
   HelpCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface PracticeAreaSection {
   icon: any;
@@ -1134,6 +1136,12 @@ export default function PracticeAreaDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 700);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Mapping URL slug -> cheia internă
   const slugs: Record<string, string> = {
@@ -1166,6 +1174,25 @@ export default function PracticeAreaDetail() {
   const key = id ? slugs[id] || id : null;
   const practiceArea = key ? practiceAreas[key] : null;
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white pt-20">
+        <div className="container mx-auto px-4 py-8">
+          <Skeleton className="w-full h-64 mb-8" />
+          <div className="grid lg:grid-cols-2 gap-12 mb-16">
+            <Skeleton className="h-48" />
+            <Skeleton className="h-48" />
+          </div>
+          <div className="space-y-8">
+            {[1, 2, 3, 4].map((i) => (
+              <Skeleton key={i} className="h-32" />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (!practiceArea) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
@@ -1182,7 +1209,7 @@ export default function PracticeAreaDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white animate-fade-in">
       {/* Hero Section */}
       <section className="relative bg-gray-900 text-white">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1589829545856-d10d557cf95f?q=80&w=2070')] bg-cover bg-center opacity-30"></div>

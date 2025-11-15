@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useNavigate } from "react-router-dom";
 import {
@@ -14,6 +15,7 @@ import {
   Building,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import officeImage1 from "@/assets/office-1.jpeg";
 import officeImage2 from "@/assets/office-2.jpeg";
 import officeImage3 from "@/assets/office-4.jpg";
@@ -22,9 +24,32 @@ import logo from "@/assets/logo.png";
 export default function About() {
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate loading
+    const timer = setTimeout(() => setLoading(false), 800);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white pt-20">
+        <div className="container mx-auto px-4 py-8">
+          <Skeleton className="w-full h-64 mb-8" />
+          <div className="grid md:grid-cols-3 gap-8 mb-12">
+            <Skeleton className="h-64" />
+            <Skeleton className="h-64" />
+            <Skeleton className="h-64" />
+          </div>
+          <Skeleton className="w-full h-96" />
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white animate-fade-in">
       {/* Hero Slider Section */}
       <section className="relative bg-white">
         <div className="relative min-h-[30vh] md:min-h-[40vh] lg:min-h-[30vh] overflow-hidden">

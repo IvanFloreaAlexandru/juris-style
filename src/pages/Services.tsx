@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Scale, Briefcase, Home, Users, Gavel, Building } from "lucide-react";
 import {
@@ -7,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useNavigate } from "react-router-dom";
 
 import officeImage1 from "@/assets/office-1.jpeg";
@@ -17,6 +19,12 @@ import officeImage4 from "@/assets/office-12.jpeg";
 export default function DomeniiDePractica() {
   const { language, t } = useLanguage();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 700);
+    return () => clearTimeout(timer);
+  }, []);
 
   const basePath =
     language === "ro" ? "/domenii-de-practica" : "/legal-services";
@@ -219,8 +227,23 @@ export default function DomeniiDePractica() {
     },
   ];
 
+  if (loading) {
+    return (
+      <div className="min-h-screen pt-20">
+        <div className="container mx-auto px-4 py-8">
+          <Skeleton className="w-full h-64 mb-8" />
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <Skeleton key={i} className="h-80" />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen pt-20">
+    <div className="min-h-screen pt-20 animate-fade-in">
       {/* Header */}
       <section className="relative py-16 min-h-[20vh] flex items-center">
         <div className="absolute inset-0">

@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, X, Globe, LogOut, Settings, Moon, Sun } from "lucide-react";
+import { Menu, X, Globe, LogOut, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -11,38 +11,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { SearchBar } from "@/components/SearchBar";
 import logoImage from "../assets/logo.png";
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isDark, setIsDark] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { language, setLanguage, t } = useLanguage();
   const { isAuthenticated, logout } = useAuth();
-
-  useEffect(() => {
-    const theme = localStorage.getItem("theme");
-    if (
-      theme === "dark" ||
-      (!theme && window.matchMedia("(prefers-color-scheme: dark)").matches)
-    ) {
-      setIsDark(true);
-      document.documentElement.classList.add("dark");
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    setIsDark(!isDark);
-    if (!isDark) {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-    }
-  };
 
   const handleLanguageSwitch = (lang: "ro" | "en") => {
     const currentPath = location.pathname;
@@ -125,27 +101,8 @@ export const Navbar = () => {
             ))}
           </div>
 
-          {/* Search Bar */}
-          <div className="hidden lg:block flex-1 max-w-md mx-4">
-            <SearchBar />
-          </div>
-
-          {/* Right Side - Theme, Language & Auth */}
+          {/* Right Side - Language & Auth */}
           <div className="flex items-center space-x-2">
-            {/* Theme Toggle */}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={toggleTheme}
-              className="hover:scale-110 transition-transform"
-            >
-              {isDark ? (
-                <Sun className="h-5 w-5" />
-              ) : (
-                <Moon className="h-5 w-5" />
-              )}
-            </Button>
-
             {/* Language Selector */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

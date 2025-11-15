@@ -1,9 +1,17 @@
+import { useState, useEffect } from "react";
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Mail, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function Lawyers() {
   const { t } = useLanguage();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 600);
+    return () => clearTimeout(timer);
+  }, []);
 
   const lawyers = [
     {
@@ -40,8 +48,30 @@ export default function Lawyers() {
     },
   ];
 
+  if (loading) {
+    return (
+      <div className="min-h-screen pt-20">
+        <section className="bg-secondary py-16">
+          <div className="container mx-auto px-4 text-center">
+            <Skeleton className="h-12 w-64 mx-auto mb-4" />
+            <Skeleton className="h-6 w-96 mx-auto" />
+          </div>
+        </section>
+        <section className="py-20">
+          <div className="container mx-auto px-4">
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {[1, 2, 3, 4].map((i) => (
+                <Skeleton key={i} className="h-96" />
+              ))}
+            </div>
+          </div>
+        </section>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen pt-20">
+    <div className="min-h-screen pt-20 animate-fade-in">
       {/* Header */}
       <section className="bg-secondary py-16">
         <div className="container mx-auto px-4 text-center">
