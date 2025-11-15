@@ -155,47 +155,43 @@ export const ArticlesProvider: React.FC<{ children: React.ReactNode }> = ({
     article: Omit<Article, "id" | "createdAt" | "updatedAt">
   ): Promise<Article> => {
     try {
-      const articleData = {
-        title: article.title,
-        slug: article.slug,
-        category: article.category,
-        tags: article.tags.join(", "),
-        extras: article.excerpt || "",
-        cover_image: article.coverImage || "",
-        content: article.content,
-      };
-
-      const response: CreateArticleResponse = await createArticleAPI(
-        articleData
-      );
-
-      let newArticle: Article;
-
-      if (response.article) {
-        // backend nou
-        newArticle = { ...response.article };
-      } else {
-        // backend vechi
-        newArticle = {
-          ...article,
-          id: Date.now().toString(),
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          publishedAt:
-            article.status === "published"
-              ? new Date().toISOString()
-              : undefined,
-          url: response.url,
-        };
+      const token = localStorage.getItem("jwt_token");
+      if (!token) {
+        throw new Error("Nu ești autentificat");
       }
 
-      // Adaugă în state
+      const response = await fetch(`${API_BASE_URL}/articles`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: article.title,
+          slug: article.slug,
+          category: article.category,
+          tags: article.tags,
+          excerpt: article.excerpt || "",
+          coverImage: article.coverImage || "",
+          content: article.content,
+          status: article.status,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail || "Nu s-a putut crea articolul");
+      }
+
+      const data = await response.json();
+      const newArticle = data.article;
+
       setAllArticles((prev) => [newArticle, ...prev]);
       setArticles((prev) => [newArticle, ...prev]);
 
       toast({
         title: "Succes",
-        description: `Articolul a fost publicat: ${response.url}`,
+        description: `Articolul a fost publicat: ${newArticle.url}`,
       });
 
       return newArticle;

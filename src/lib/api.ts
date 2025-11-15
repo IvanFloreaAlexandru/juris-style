@@ -16,7 +16,6 @@ const removeToken = (): void => {
   localStorage.removeItem("jwt_token");
 };
 
-// Login and get JWT token
 export const loginAPI = async (
   username: string,
   password: string
@@ -25,10 +24,7 @@ export const loginAPI = async (
   formData.append("username", username);
   formData.append("password", password);
 
-  // În loc de:
-
-  // Folosește:
-  const response = await fetch(`${API_BASE_URL.replace(/\/$/, "")}/token`, {
+  const response = await fetch(`${API_BASE_URL}/token`, {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
