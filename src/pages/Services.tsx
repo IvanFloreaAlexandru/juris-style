@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Scale, Briefcase, Home, Users, Gavel, Building } from "lucide-react";
+import { Scale, Home, Building } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -41,18 +41,6 @@ export default function DomeniiDePractica() {
       image: officeImage1,
     },
     {
-      icon: Briefcase,
-      title: t("Proprietate intelectuală", "Intellectual Property"),
-      description: t(
-        "Constituire societăți, fuziuni, achiziții, restructurări",
-        "Company formation, mergers, acquisitions, restructuring"
-      ),
-      path: `${basePath}/${
-        language === "ro" ? "proprietate-intelectuala" : "intellectual-property"
-      }`,
-      image: officeImage2,
-    },
-    {
       icon: Home,
       title: t("Drept societar", "Corporate Law"),
       description: t(
@@ -65,101 +53,31 @@ export default function DomeniiDePractica() {
       image: officeImage3,
     },
     {
-      icon: Users,
-      title: t("Restructurare și recuperare creanțe", "Debt Recovery"),
-      description: t(
-        "Divorț, partaj, custodie copii, pensie de întreținere",
-        "Divorce, partition, child custody, alimony"
-      ),
-      path: `${basePath}/${
-        language === "ro" ? "restructurare-recuperare" : "debt-recovery"
-      }`,
-      image: officeImage4,
-    },
-    {
-      icon: Gavel,
-      title: t("Insolvență", "Insolvency"),
-      description: t(
-        "Apărare în procese penale, reprezentare victimă, cauțiune",
-        "Criminal defense, victim representation, bail"
-      ),
-      path: `${basePath}/${language === "ro" ? "insolventa" : "insolvency"}`,
-      image: officeImage1,
-    },
-    {
       icon: Building,
-      title: t(
-        "Drept bancar, asigurări, piața de capital și finanțare",
-        "Banking & Finance Law"
-      ),
+      title: t("Drept fiscal", "Fiscal Law"),
       description: t(
-        "Contracte bancare, tranzacții financiare, asigurări",
-        "Bank contracts, financial transactions, insurance"
+        "Asistență fiscală și consultanță în impozite",
+        "Fiscal assistance and tax consultancy"
       ),
-      path: `${basePath}/${
-        language === "ro" ? "drept-financiar" : "banking-finance-law"
-      }`,
+      path: `${basePath}/${language === "ro" ? "drept-fiscal" : "fiscal-law"}`,
       image: officeImage2,
     },
     {
       icon: Building,
-      title: t("Arbitraj intern și internațional", "Arbitration"),
-      description: t(
-        "Soluționarea disputelor prin arbitraj intern și internațional",
-        "Resolution of disputes via domestic and international arbitration"
+      title: t(
+        "Drept penal. Latura civilă a dreptului penal",
+        "Criminal Law – Civil Aspect"
       ),
-      path: `${basePath}/${
-        language === "ro" ? "arbitraj-executare" : "arbitration"
-      }`,
+      description: t(
+        "Apărare penală cu implicații civile",
+        "Criminal defense with civil implications"
+      ),
+      path: `${basePath}/${language === "ro" ? "drept-penal" : "criminal-law"}`,
       image: officeImage3,
     },
     {
       icon: Building,
-      title: t("Proceduri de executare silită", "Enforcement Procedures"),
-      description: t(
-        "Executarea obligațiilor prin proceduri legale",
-        "Enforcement of obligations through legal procedures"
-      ),
-      path: `${basePath}/${
-        language === "ro"
-          ? "proceduri-executare-silita"
-          : "enforcement-procedures"
-      }`,
-      image: officeImage4,
-    },
-    {
-      icon: Building,
-      title: t(
-        "Drept administrativ, fiscal și contencios constituțional",
-        "Administrative & Constitutional Law"
-      ),
-      description: t(
-        "Asistență în domeniul administrativ, fiscal și contencios",
-        "Assistance in administrative, fiscal, and constitutional matters"
-      ),
-      path: `${basePath}/${
-        language === "ro" ? "drept-administrativ-fiscal" : "administrative-law"
-      }`,
-      image: officeImage1,
-    },
-    {
-      icon: Building,
-      title: t("Dreptul concurenței și ajutor de stat", "Competition Law"),
-      description: t(
-        "Achiziții publice și reglementări concurențiale",
-        "Public acquisitions and competition regulations"
-      ),
-      path: `${basePath}/${
-        language === "ro" ? "drept-concurenta-ajutor" : "competition-law"
-      }`,
-      image: officeImage2,
-    },
-    {
-      icon: Building,
-      title: t(
-        "Dreptul muncii și al securității sociale",
-        "Labor & Social Security Law"
-      ),
+      title: t("Dreptul muncii", "Labor Law"),
       description: t(
         "Contracte de muncă, concedieri, discriminare, hărțuire",
         "Employment contracts, dismissals, discrimination, harassment"
@@ -169,61 +87,40 @@ export default function DomeniiDePractica() {
     },
     {
       icon: Building,
-      title: t("Protecția consumatorului", "Consumer Protection"),
+      title: t("Fundații și asociații", "Foundations & Associations"),
       description: t(
-        "Asistență juridică în relația cu consumatorii",
-        "Legal assistance in consumer relations"
+        "Consultanță juridică pentru organizații non-profit",
+        "Legal consultancy for non-profit organizations"
       ),
       path: `${basePath}/${
-        language === "ro" ? "protectia-consumatorului" : "consumer-protection"
-      }`,
-      image: officeImage4,
-    },
-    {
-      icon: Building,
-      title: t("Dreptul mediului", "Environmental Law"),
-      description: t(
-        "Reglementări și litigii în domeniul mediului",
-        "Regulations and litigation in environmental law"
-      ),
-      path: `${basePath}/${
-        language === "ro" ? "drept-mediu" : "environmental-law"
+        language === "ro" ? "fundatii-asociatii" : "foundations-associations"
       }`,
       image: officeImage1,
     },
     {
       icon: Building,
-      title: t("Drepturile omului. Proceduri CEDO", "Human Rights & ECHR"),
+      title: t(
+        "Proceduri speciale. Ordonanța de plată. Procedura de evacuare. Ordonanța președințială",
+        "Special Procedures: Payment Order, Eviction, Presidential Order"
+      ),
       description: t(
-        "Asistență în litigii privind drepturile omului",
-        "Assistance in human rights litigation"
+        "Proceduri speciale pentru recuperarea creanțelor și evacuări",
+        "Special procedures for debt recovery and evictions"
       ),
       path: `${basePath}/${
-        language === "ro" ? "drepturile-omului-cedo" : "human-rights"
-      }`,
-      image: officeImage2,
-    },
-    {
-      icon: Building,
-      title: t("Drept penal", "Criminal Law"),
-      description: t(
-        "Apărare în procese penale, reprezentare victimă",
-        "Criminal defense, victim representation"
-      ),
-      path: `${basePath}/${language === "ro" ? "drept-penal" : "criminal-law"}`,
-      image: officeImage3,
-    },
-    {
-      icon: Building,
-      title: t("Achiziții publice", "Public Procurement"),
-      description: t(
-        "Consultanță și litigii în achiziții publice",
-        "Consulting and litigation in public procurement"
-      ),
-      path: `${basePath}/${
-        language === "ro" ? "achizitii-publice" : "public-procurement"
+        language === "ro" ? "proceduri-speciale" : "special-procedures"
       }`,
       image: officeImage4,
+    },
+    {
+      icon: Building,
+      title: t("Malpraxis", "Medical Malpractice"),
+      description: t(
+        "Asistență juridică în cazuri de malpraxis",
+        "Legal assistance in malpractice cases"
+      ),
+      path: `${basePath}/${language === "ro" ? "malpraxis" : "malpractice"}`,
+      image: officeImage2,
     },
   ];
 
@@ -232,8 +129,8 @@ export default function DomeniiDePractica() {
       <div className="min-h-screen pt-20">
         <div className="container mx-auto px-4 py-8">
           <Skeleton className="w-full h-64 mb-8" />
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
+          <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-8">
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
               <Skeleton key={i} className="h-80" />
             ))}
           </div>

@@ -6,18 +6,20 @@
 
 ```bash
 # FastAPI Backend URL
-VITE_API_URL=http://localhost:8000
+VITE_API_URL=http://localhost:8002
 ```
 
 ### 2. Pornește server-ul FastAPI
 
 Asigură-te că server-ul FastAPI rulează pe `http://localhost:8000` cu endpoint-urile:
+
 - `POST /token` - Autentificare JWT
 - `POST /create-article/` - Creare articol (necesită JWT)
 
 ### 3. Credențiale Admin
 
 Folosește credențialele configurate în `.env` al backend-ului FastAPI:
+
 - Username: valoarea din `ADMIN_USERNAME`
 - Password: valoarea din `ADMIN_PASSWORD`
 
@@ -44,19 +46,20 @@ Când creezi un articol din admin (`/admin/articles/new`), aplicația:
 
 ```typescript
 {
-  title: string;        // Titlul articolului
-  slug: string;         // URL-friendly slug
-  category: string;     // Categoria (ex: "Noutăți Legislative")
-  tags: string;         // Tag-uri separate prin virgulă
-  extras: string;       // Excerpt/descriere scurtă
-  cover_image: string;  // URL imagine cover
-  content: string;      // Conținut HTML
+  title: string; // Titlul articolului
+  slug: string; // URL-friendly slug
+  category: string; // Categoria (ex: "Noutăți Legislative")
+  tags: string; // Tag-uri separate prin virgulă
+  extras: string; // Excerpt/descriere scurtă
+  cover_image: string; // URL imagine cover
+  content: string; // Conținut HTML
 }
 ```
 
 ## Verificare Token Expirat
 
 Dacă primești eroare `401 Unauthorized`, aplicația:
+
 - Șterge automat token-ul expirat
 - Afișează mesaj de eroare
 - Utilizatorul trebuie să se autentifice din nou
