@@ -52,14 +52,14 @@ export const Navbar = () => {
           { path: "/domenii-de-practica", label: "Domenii de practică" },
           {
             path: "/noutati",
-            label: "Noutăți legislative & Comentarii juridice",
+            label: "Noutăți & Comentarii",
           },
           { path: "/contact", label: "Contact" },
         ]
       : [
           { path: "/about", label: "About Us" },
           { path: "/legal-services", label: "Legal Services" },
-          { path: "/news", label: "News" },
+          { path: "/news", label: "News & Commentary" },
           { path: "/contact", label: "Contact" },
         ];
 
@@ -70,27 +70,30 @@ export const Navbar = () => {
 
   return (
     <nav className="fixed top-0 w-full bg-background/80 backdrop-blur-md z-50 border-b border-border/50 shadow-sm">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-20">
+      <div className="container mx-auto px-3 sm:px-4">
+        <div className="flex items-center justify-between h-16 sm:h-20">
           {/* Logo */}
-          <Link to="/despre" className="flex items-center space-x-2">
+          <Link
+            to={language === "ro" ? "/despre" : "/about"}
+            className="flex items-center space-x-2 min-w-0 flex-shrink"
+          >
             <img
               src={logoImage}
               alt="Logo Frunză & Asociații"
-              className="h-12 w-auto object-contain"
+              className="h-10 sm:h-12 w-auto object-contain flex-shrink-0"
             />
-            <span className="font-serif font-bold text-xl hidden sm:block text-[hsl(var(--primary))] pr-5">
-              {t("Frunză & Asociații", "Frunză & Asociații")}
+            <span className="font-serif font-bold text-base sm:text-lg md:text-xl hidden xs:block text-[hsl(var(--primary))] truncate">
+              Frunză & Asociații
             </span>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-1">
+          <div className="hidden lg:flex items-center space-x-1">
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                className={`px-3 xl:px-4 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${
                   location.pathname === item.path
                     ? "text-primary bg-secondary"
                     : "text-foreground hover:text-primary hover:bg-secondary/50"
@@ -102,17 +105,17 @@ export const Navbar = () => {
           </div>
 
           {/* Right Side - Language & Auth */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0">
             {/* Language Selector */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="gap-2 hover:scale-110 transition-transform"
+                  className="gap-1 sm:gap-2 hover:scale-110 transition-transform px-2 sm:px-3"
                 >
                   <Globe className="h-4 w-4" />
-                  <span className="hidden sm:inline">
+                  <span className="text-xs sm:text-sm">
                     {language === "ro" ? "RO" : "EN"}
                   </span>
                 </Button>
@@ -127,28 +130,28 @@ export const Navbar = () => {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* Auth Section */}
+            {/* Auth Section - Desktop */}
             {isAuthenticated ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="default"
                     size="sm"
-                    className="hidden sm:inline-flex gap-2"
+                    className="hidden sm:inline-flex gap-2 text-xs sm:text-sm px-2 sm:px-3"
                   >
                     <Settings className="h-4 w-4" />
-                    {t("Admin", "Admin")}
+                    <span className="hidden md:inline">Admin</span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="bg-popover">
                   <DropdownMenuItem onClick={() => navigate("/admin/articles")}>
                     <Settings className="h-4 w-4 mr-2" />
-                    {t("Panou Admin", "Admin Panel")}
+                    {language === "ro" ? "Panou Admin" : "Admin Panel"}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleLogout}>
                     <LogOut className="h-4 w-4 mr-2" />
-                    {t("Logout", "Logout")}
+                    Logout
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -157,9 +160,9 @@ export const Navbar = () => {
                 <Button
                   variant="default"
                   size="sm"
-                  className="hidden sm:inline-flex"
+                  className="hidden sm:inline-flex text-xs sm:text-sm px-2 sm:px-3"
                 >
-                  {t("Login", "Login")}
+                  Login
                 </Button>
               </Link>
             )}
@@ -167,12 +170,13 @@ export const Navbar = () => {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="md:hidden p-2 rounded-md hover:bg-secondary"
+              className="lg:hidden p-2 rounded-md hover:bg-secondary"
+              aria-label={isOpen ? "Închide meniu" : "Deschide meniu"}
             >
               {isOpen ? (
-                <X className="h-6 w-6" />
+                <X className="h-5 w-5 sm:h-6 sm:w-6" />
               ) : (
-                <Menu className="h-6 w-6" />
+                <Menu className="h-5 w-5 sm:h-6 sm:w-6" />
               )}
             </button>
           </div>
@@ -180,7 +184,7 @@ export const Navbar = () => {
 
         {/* Mobile Navigation */}
         {isOpen && (
-          <div className="md:hidden py-4 border-t border-border">
+          <div className="lg:hidden py-4 border-t border-border">
             <div className="flex flex-col space-y-2">
               {navItems.map((item) => (
                 <Link
@@ -205,7 +209,7 @@ export const Navbar = () => {
                     className="px-4 py-3 rounded-md text-sm font-medium text-foreground hover:text-primary hover:bg-secondary/50 flex items-center"
                   >
                     <Settings className="h-4 w-4 mr-2" />
-                    {t("Panou Admin", "Admin Panel")}
+                    {language === "ro" ? "Panou Admin" : "Admin Panel"}
                   </Link>
                   <button
                     onClick={() => {
@@ -215,7 +219,7 @@ export const Navbar = () => {
                     className="px-4 py-3 rounded-md text-sm font-medium text-foreground hover:text-primary hover:bg-secondary/50 text-left flex items-center"
                   >
                     <LogOut className="h-4 w-4 mr-2" />
-                    {t("Logout", "Logout")}
+                    Logout
                   </button>
                 </>
               ) : (
@@ -224,7 +228,7 @@ export const Navbar = () => {
                   onClick={() => setIsOpen(false)}
                   className="px-4 py-3 rounded-md text-sm font-medium text-foreground hover:text-primary hover:bg-secondary/50"
                 >
-                  {t("Login", "Login")}
+                  Login
                 </Link>
               )}
             </div>
