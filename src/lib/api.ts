@@ -40,32 +40,73 @@ export const loginAPI = async (username: string, password: string): Promise<{ ac
   return data;
 };
 
+// Get articles with pagination
+export const getArticlesAPI = async (page: number = 1, limit: number = 6, search?: string) => {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    limit: limit.toString(),
+  });
+  if (search) params.append('search', search);
+
+  const response = await fetch(`${API_BASE_URL}/articles?${params}`);
+  if (!response.ok) throw new Error('Failed to fetch articles');
+  return await response.json();
+};
+
+// Get single article
+export const getArticleAPI = async (id: number) => {
+  const response = await fetch(`${API_BASE_URL}/articles/${id}`);
+  if (!response.ok) throw new Error('Failed to fetch article');
+  return await response.json();
+};
+
 // Create article
 export const createArticleAPI = async (articleData: {
   title: string;
   slug: string;
   category: string;
-  tags: string;
-  extras?: string;
-  cover_image?: string;
+  tags: string[];
+  excerpt?: string;
+  coverImage?: string;
   content: string;
-}): Promise<{ status: string; file: string; url: string }> => {
+  status?: string;
+}): Promise<any> => {
   const token = getToken();
-  if (!token) {
-    throw new Error('No authentication token found');
+  if (!token) throw new Error('No authentication token found');
+
+  const response = await fetch(`${API_BASE_URL}/articles`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(articleData),
+  });
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      removeToken();
+      throw new Error('Authentication expired. Please login again.');
+    }
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to create article');
   }
 
-  const formData = new URLSearchParams();
-  formData.append('title', articleData.title);
-  formData.append('slug', articleData.slug);
-  formData.append('category', articleData.category);
-  formData.append('tags', articleData.tags);
-  if (articleData.extras) formData.append('extras', articleData.extras);
-  if (articleData.cover_image) formData.append('cover_image', articleData.cover_image);
-  formData.append('content', articleData.content);
+  return await response.json();
+};
 
-  const response = await fetch(`${API_BASE_URL}/create-article/`, {
-    method: 'POST',
+// Update article
+export const updateArticleAPI = async (id: number, updates: Partial<any>) => {
+  const token = getToken();
+  if (!token) throw new Error('No authentication token found');
+
+  const formData = new URLSearchParams();
+  if (updates.title) formData.append('title', updates.title);
+  if (updates.category) formData.append('category', updates.category);
+  if (updates.content) formData.append('content', updates.content);
+
+  const response = await fetch(`${API_BASE_URL}/articles/${id}`, {
+    method: 'PUT',
     headers: {
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/x-www-form-urlencoded',
@@ -78,8 +119,30 @@ export const createArticleAPI = async (articleData: {
       removeToken();
       throw new Error('Authentication expired. Please login again.');
     }
-    const error = await response.json();
-    throw new Error(error.detail || 'Failed to create article');
+    throw new Error('Failed to update article');
+  }
+
+  return await response.json();
+};
+
+// Delete article
+export const deleteArticleAPI = async (id: number) => {
+  const token = getToken();
+  if (!token) throw new Error('No authentication token found');
+
+  const response = await fetch(`${API_BASE_URL}/articles/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      removeToken();
+      throw new Error('Authentication expired. Please login again.');
+    }
+    throw new Error('Failed to delete article');
   }
 
   return await response.json();

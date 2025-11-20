@@ -24,8 +24,8 @@ export default function News() {
   const itemsPerPage = 9;
 
   useEffect(() => {
-    fetchArticles({ status: 'published' });
-  }, []);
+    fetchArticles({ status: 'published', page: currentPage, limit: itemsPerPage });
+  }, [currentPage]);
 
   const publishedArticles = articles.filter(a => a.status === 'published');
   
