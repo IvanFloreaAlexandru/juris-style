@@ -9,15 +9,10 @@ import {
   Gavel,
   AlertCircle,
   HeartPulse,
+  ChevronRight, // Am adaugat o sageata discreta pentru a indica actiunea
 } from "lucide-react";
 import HeroSection from "@/components/HeroSection";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useNavigate } from "react-router-dom";
 
@@ -39,24 +34,17 @@ export default function DomeniiDePractica() {
   const basePath =
     language === "ro" ? "/domenii-de-practica" : "/legal-services";
 
+  // Am eliminat proprietatea 'description' conform cerintei
   const services = [
     {
       icon: Scale,
       title: language === "ro" ? "Drept civil" : "Civil Law",
-      description:
-        language === "ro"
-          ? "Contracte, litigii civile, executări silite, recuperări creanțe"
-          : "Contracts, civil litigation, forced executions, debt recovery",
       path: `${basePath}/${language === "ro" ? "drept-civil" : "civil-law"}`,
       image: officeImage1,
     },
     {
       icon: Building,
       title: language === "ro" ? "Drept societar" : "Corporate Law",
-      description:
-        language === "ro"
-          ? "Înființare societăți, guvernanță corporativă, fuziuni și achiziții"
-          : "Company formation, corporate governance, mergers and acquisitions",
       path: `${basePath}/${
         language === "ro" ? "drept-societar" : "corporate-law"
       }`,
@@ -65,10 +53,6 @@ export default function DomeniiDePractica() {
     {
       icon: FileText,
       title: language === "ro" ? "Drept fiscal" : "Fiscal Law",
-      description:
-        language === "ro"
-          ? "Consultanță fiscală, planificare fiscală, litigii fiscale"
-          : "Tax consultancy, tax planning, tax litigation",
       path: `${basePath}/${language === "ro" ? "drept-fiscal" : "fiscal-law"}`,
       image: officeImage2,
     },
@@ -78,20 +62,12 @@ export default function DomeniiDePractica() {
         language === "ro"
           ? "Drept penal. Latura civilă"
           : "Criminal Law – Civil Aspect",
-      description:
-        language === "ro"
-          ? "Apărare penală, constituire parte civilă, despăgubiri"
-          : "Criminal defense, civil party constitution, compensation",
       path: `${basePath}/${language === "ro" ? "drept-penal" : "criminal-law"}`,
       image: officeImage3,
     },
     {
       icon: Users,
       title: language === "ro" ? "Dreptul muncii" : "Labor Law",
-      description:
-        language === "ro"
-          ? "Contracte de muncă, concedieri, litigii de muncă, discriminare"
-          : "Employment contracts, dismissals, labor disputes, discrimination",
       path: `${basePath}/${language === "ro" ? "drept-munca" : "labor-law"}`,
       image: officeImage1,
     },
@@ -101,10 +77,6 @@ export default function DomeniiDePractica() {
         language === "ro"
           ? "Fundații și asociații"
           : "Foundations & Associations",
-      description:
-        language === "ro"
-          ? "Înființare ONG-uri, guvernanță, conformitate legală"
-          : "NGO formation, governance, legal compliance",
       path: `${basePath}/${
         language === "ro" ? "fundatii-asociatii" : "foundations-associations"
       }`,
@@ -113,10 +85,6 @@ export default function DomeniiDePractica() {
     {
       icon: AlertCircle,
       title: language === "ro" ? "Proceduri speciale" : "Special Procedures",
-      description:
-        language === "ro"
-          ? "Ordonanță de plată, evacuare, ordonanță președințială"
-          : "Payment order, eviction, presidential order",
       path: `${basePath}/${
         language === "ro" ? "proceduri-speciale" : "special-procedures"
       }`,
@@ -125,10 +93,6 @@ export default function DomeniiDePractica() {
     {
       icon: HeartPulse,
       title: language === "ro" ? "Malpraxis medical" : "Medical Malpractice",
-      description:
-        language === "ro"
-          ? "Asistență juridică în cazuri de malpraxis medical"
-          : "Legal assistance in medical malpractice cases",
       path: `${basePath}/${language === "ro" ? "malpraxis" : "malpractice"}`,
       image: officeImage3,
     },
@@ -139,9 +103,10 @@ export default function DomeniiDePractica() {
       <div className="min-h-screen pt-16 sm:pt-20">
         <div className="container mx-auto px-4 py-6 sm:py-8">
           <Skeleton className="w-full h-48 sm:h-64 mb-6 sm:mb-8" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
+          {/* Skeleton adaptat pentru carduri mai mici */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-              <Skeleton key={i} className="h-64 sm:h-72 lg:h-80" />
+              <Skeleton key={i} className="h-24 sm:h-32" />
             ))}
           </div>
         </div>
@@ -160,48 +125,51 @@ export default function DomeniiDePractica() {
         titleEn="Legal Services"
         subtitle={
           language === "ro"
-            ? "Oferim asistență juridică complexă în diverse domenii ale dreptului"
-            : "We provide comprehensive legal assistance in various areas of law"
+            ? "Soluții juridice specializate pentru nevoile dumneavoastră"
+            : "Specialized legal solutions for your needs"
         }
-        subtitleEn="We provide comprehensive legal assistance in various areas of law"
+        subtitleEn="Specialized legal solutions for your needs"
         language={language}
       />
 
-      {/* Services */}
-      <section className="py-12 sm:py-16 lg:py-20">
-        <div className="w-full sm:w-[90%] lg:w-[85%] xl:w-[80%] mx-auto px-4 sm:px-6">
+      {/* Services Grid */}
+      <section className="py-12 sm:py-16 bg-gray-50/50">
+        <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
             {services.map((service, idx) => (
               <Card
                 key={idx}
-                className="cursor-pointer transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 overflow-hidden flex flex-col sm:flex-row h-auto sm:h-56 md:h-64 lg:h-72 group"
+                className="group cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1 overflow-hidden flex flex-row h-28 sm:h-36 md:h-40 bg-white border-gray-200"
                 onClick={() => navigate(service.path)}
               >
-                {/* Image container */}
-                <div className="w-full sm:w-2/5 md:w-1/2 overflow-hidden relative h-48 sm:h-full flex-shrink-0">
+                {/* Partea Stângă: Imaginea */}
+                {/* Ocupă 35% pe mobil și 40% pe desktop */}
+                <div className="w-[35%] sm:w-[40%] relative overflow-hidden h-full flex-shrink-0">
                   <img
                     src={service.image}
                     alt={service.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
-                  <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors" />
                 </div>
 
-                {/* Content container */}
-                <div className="w-full sm:w-3/5 md:w-1/2 flex flex-col">
-                  <CardHeader className="flex-1 p-4 sm:p-5 lg:p-6">
-                    <div className="flex items-start gap-2 sm:gap-3 mb-2 sm:mb-3">
-                      <div className="p-1.5 sm:p-2 bg-primary/10 rounded-lg flex-shrink-0 transition-transform duration-300 group-hover:scale-110">
-                        <service.icon className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-                      </div>
-                      <CardTitle className="text-sm sm:text-base lg:text-lg font-serif leading-tight line-clamp-2">
-                        {service.title}
-                      </CardTitle>
+                {/* Partea Dreaptă: Icon + Titlu */}
+                <div className="w-[65%] sm:w-[60%] flex items-center justify-between px-4 sm:px-6 lg:px-8 relative">
+                  {/* Wrapper pentru Icon si Titlu */}
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    {/* Icon Container - Cerc roșu */}
+                    <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-red-50 group-hover:bg-red-600 flex items-center justify-center transition-colors duration-300">
+                      <service.icon className="h-5 w-5 sm:h-6 sm:w-6 text-red-600 group-hover:text-white transition-colors duration-300" />
                     </div>
-                    <CardDescription className="text-xs sm:text-sm leading-relaxed line-clamp-2 sm:line-clamp-3">
-                      {service.description}
-                    </CardDescription>
-                  </CardHeader>
+
+                    {/* Titlu */}
+                    <h3 className="font-serif font-bold text-base sm:text-lg lg:text-xl text-gray-900 leading-tight group-hover:text-red-700 transition-colors">
+                      {service.title}
+                    </h3>
+                  </div>
+
+                  {/* Săgeată decorativă (opțional, pentru UX) */}
+                  <ChevronRight className="h-5 w-5 text-gray-300 group-hover:text-red-600 group-hover:translate-x-1 transition-all hidden sm:block" />
                 </div>
               </Card>
             ))}
@@ -212,56 +180,52 @@ export default function DomeniiDePractica() {
       {/* Process Section */}
       <section className="py-12 sm:py-16 lg:py-20 bg-secondary">
         <div className="container mx-auto px-4 sm:px-6">
-          <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-center mb-8 sm:mb-10 lg:mb-12">
-            {language === "ro" ? "Cum lucrăm" : "How We Work"}
+          <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-center mb-10 sm:mb-16">
+            {language === "ro" ? "Procesul nostru de lucru" : "Our Process"}
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
             {[
               {
                 step: "01",
-                title:
-                  language === "ro"
-                    ? "Consultație inițială"
-                    : "Initial Consultation",
+                title: language === "ro" ? "Analiză" : "Analysis",
                 description:
                   language === "ro"
-                    ? "Analizăm cazul dumneavoastră în detaliu"
-                    : "We analyze your case in detail",
+                    ? "Evaluarea detaliată a situației juridice."
+                    : "Detailed evaluation of the legal situation.",
               },
               {
                 step: "02",
-                title:
-                  language === "ro" ? "Strategie juridică" : "Legal Strategy",
+                title: language === "ro" ? "Strategie" : "Strategy",
                 description:
                   language === "ro"
-                    ? "Dezvoltăm un plan de acțiune personalizat"
-                    : "We develop a personalized action plan",
+                    ? "Planificarea pașilor și acțiunilor legale."
+                    : "Planning legal steps and actions.",
               },
               {
                 step: "03",
-                title: language === "ro" ? "Reprezentare" : "Representation",
+                title: language === "ro" ? "Acțiune" : "Action",
                 description:
                   language === "ro"
-                    ? "Vă reprezentăm în instanță și negocieri"
-                    : "We represent you in court and negotiations",
+                    ? "Implementarea strategiei stabilite."
+                    : "Implementation of the agreed strategy.",
               },
               {
                 step: "04",
-                title: language === "ro" ? "Soluționare" : "Resolution",
+                title: language === "ro" ? "Rezultat" : "Result",
                 description:
                   language === "ro"
-                    ? "Obținem rezultatul optim pentru dumneavoastră"
-                    : "We achieve the optimal result for you",
+                    ? "Finalizarea cu succes a mandatului."
+                    : "Successful completion of the mandate.",
               },
             ].map((item, idx) => (
-              <div key={idx} className="text-center">
-                <div className="text-4xl sm:text-5xl font-serif font-bold text-accent mb-3 sm:mb-4">
+              <div key={idx} className="text-center group">
+                <div className="text-4xl sm:text-5xl font-serif font-bold text-gray-200 group-hover:text-red-600 transition-colors duration-300 mb-3 sm:mb-4 select-none">
                   {item.step}
                 </div>
-                <h3 className="font-serif text-lg sm:text-xl font-semibold mb-2">
+                <h3 className="font-serif text-lg sm:text-xl font-semibold mb-2 text-gray-900">
                   {item.title}
                 </h3>
-                <p className="text-sm sm:text-base text-muted-foreground">
+                <p className="text-sm text-gray-600 max-w-xs mx-auto">
                   {item.description}
                 </p>
               </div>

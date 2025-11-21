@@ -25,7 +25,7 @@ export interface Article {
   category: string;
   tags?: string[];
   coverImage?: string;
-  status: "draft" | "published";
+  status: "Draft" | "Published";
   author: string;
 }
 
@@ -74,7 +74,7 @@ export const ArticleForm: React.FC<ArticleFormProps> = ({
     }
   }, [formData.title]);
 
-  const handleSubmit = async (status: "draft" | "published") => {
+  const handleSubmit = async (status: "Draft" | "Published") => {
     if (!formData.title || !formData.content || !formData.category) {
       toast({
         title: "Eroare",
@@ -99,7 +99,7 @@ export const ArticleForm: React.FC<ArticleFormProps> = ({
       toast({
         title: "Success",
         description:
-          status === "published" ? "Articol publicat" : "Draft salvat",
+          status === "Published" ? "Articol publicat" : "Draft salvat",
       });
       navigate("/admin/articles");
     } catch (error) {
@@ -229,9 +229,7 @@ export const ArticleForm: React.FC<ArticleFormProps> = ({
                 <Label>Conținut *</Label>
                 <RichTextEditor
                   content={formData.content}
-                  onChange={(content) =>
-                    setFormData({ ...formData, content })
-                  }
+                  onChange={(content) => setFormData({ ...formData, content })}
                 />
               </div>
             </div>
@@ -338,9 +336,7 @@ export const ArticleForm: React.FC<ArticleFormProps> = ({
             <Label>Conținut *</Label>
             <RichTextEditor
               content={formData.content}
-              onChange={(content) =>
-                setFormData({ ...formData, content })
-              }
+              onChange={(content) => setFormData({ ...formData, content })}
             />
           </div>
         </div>
@@ -364,13 +360,13 @@ export const ArticleForm: React.FC<ArticleFormProps> = ({
         </Button>
         <Button
           variant="outline"
-          onClick={() => handleSubmit("draft")}
+          onClick={() => handleSubmit("Draft")}
           disabled={loading}
         >
           <Save className="mr-2 h-4 w-4" />
           Salvează Draft
         </Button>
-        <Button onClick={() => handleSubmit("published")} disabled={loading}>
+        <Button onClick={() => handleSubmit("Published")} disabled={loading}>
           <Eye className="mr-2 h-4 w-4" />
           Publică
         </Button>

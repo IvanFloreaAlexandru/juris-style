@@ -1,10 +1,16 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useArticles } from '@/contexts/ArticlesContext';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { useArticles } from "@/contexts/ArticlesContext";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -12,9 +18,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Plus, Search, Edit, Trash2 } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+} from "@/components/ui/table";
+import { Plus, Search, Edit, Trash2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,47 +30,53 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+} from "@/components/ui/alert-dialog";
 
 export const AdminArticles: React.FC = () => {
   const { articles, deleteArticle, fetchArticles } = useArticles();
   const { toast } = useToast();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('all');
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const handleDelete = async () => {
     if (!deleteId) return;
-    
+
     try {
       await deleteArticle(deleteId);
-      toast({ title: 'Articol șters cu succes' });
+      toast({ title: "Articol șters cu succes" });
     } catch (error) {
       toast({
-        title: 'Eroare',
-        description: 'Nu s-a putut șterge articolul',
-        variant: 'destructive',
+        title: "Eroare",
+        description: "Nu s-a putut șterge articolul",
+        variant: "destructive",
       });
     }
     setDeleteId(null);
   };
 
   const filteredArticles = articles.filter((article) => {
-    const matchesSearch = article.title.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = categoryFilter === 'all' || article.category === categoryFilter;
-    const matchesStatus = statusFilter === 'all' || article.status === statusFilter;
+    const matchesSearch = article.title
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
+    const matchesCategory =
+      categoryFilter === "all" || article.category === categoryFilter;
+    const matchesStatus =
+      statusFilter === "all" || article.status === statusFilter;
     return matchesSearch && matchesCategory && matchesStatus;
   });
 
-  const categories = Array.from(new Set(articles.map(a => a.category)));
+  const categories = Array.from(new Set(articles.map((a) => a.category)));
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-3xl font-bold">Articole</h2>
-          <p className="text-muted-foreground">Gestionează articolele și noutățile legislative</p>
+          <p className="text-muted-foreground">
+            Gestionează articolele și noutățile legislative
+          </p>
         </div>
         <Button asChild>
           <Link to="/admin/articles/new">
@@ -90,8 +102,10 @@ export const AdminArticles: React.FC = () => {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Toate categoriile</SelectItem>
-            {categories.map(cat => (
-              <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+            {categories.map((cat) => (
+              <SelectItem key={cat} value={cat}>
+                {cat}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -121,7 +135,10 @@ export const AdminArticles: React.FC = () => {
           <TableBody>
             {filteredArticles.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center text-muted-foreground">
+                <TableCell
+                  colSpan={5}
+                  className="text-center text-muted-foreground"
+                >
                   Nu există articole
                 </TableCell>
               </TableRow>
@@ -131,12 +148,16 @@ export const AdminArticles: React.FC = () => {
                   <TableCell className="font-medium">{article.title}</TableCell>
                   <TableCell>{article.category}</TableCell>
                   <TableCell>
-                    <Badge variant={article.status === 'published' ? 'default' : 'secondary'}>
-                      {article.status === 'published' ? 'Publicat' : 'Draft'}
+                    <Badge
+                      variant={
+                        article.status === "Published" ? "default" : "secondary"
+                      }
+                    >
+                      {article.status === "Published" ? "Publicat" : "Draft"}
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    {new Date(article.createdAt).toLocaleDateString('ro-RO')}
+                    {new Date(article.createdAt).toLocaleDateString("ro-RO")}
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
@@ -166,7 +187,8 @@ export const AdminArticles: React.FC = () => {
           <AlertDialogHeader>
             <AlertDialogTitle>Ești sigur?</AlertDialogTitle>
             <AlertDialogDescription>
-              Această acțiune nu poate fi anulată. Articolul va fi șters permanent.
+              Această acțiune nu poate fi anulată. Articolul va fi șters
+              permanent.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

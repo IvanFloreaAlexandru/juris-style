@@ -1,5 +1,11 @@
 import React, { createContext, useContext, useState } from "react";
-import { getArticlesAPI, getArticleAPI, createArticleAPI, updateArticleAPI, deleteArticleAPI } from "@/lib/api";
+import {
+  getArticlesAPI,
+  getArticleAPI,
+  createArticleAPI,
+  updateArticleAPI,
+  deleteArticleAPI,
+} from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
 
 export interface Article {
@@ -10,7 +16,7 @@ export interface Article {
   excerpt: string;
   category: string;
   tags: string[];
-  status: "draft" | "published";
+  status: "Draft" | "Published";
   author: string;
   coverImage?: string;
   createdAt: string;
@@ -156,7 +162,10 @@ export const ArticlesProvider: React.FC<{ children: React.ReactNode }> = ({
       console.error("Error creating article:", error);
       toast({
         title: "Eroare",
-        description: error instanceof Error ? error.message : "Nu s-a putut crea articolul",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Nu s-a putut crea articolul",
         variant: "destructive",
       });
       throw error;
