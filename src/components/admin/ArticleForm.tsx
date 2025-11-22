@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,11 +11,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { useToast } from "@/hooks/use-toast";
-import { Save, Eye, EyeOff } from "lucide-react";
+import {
+  Save,
+  Eye,
+  Upload,
+  Image as ImageIcon,
+  X,
+  ArrowLeft,
+  Globe,
+  Settings,
+} from "lucide-react";
 import { RichTextEditor } from "./RichTextEditor";
 import { ArticlePreview } from "./ArticlePreview";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export interface Article {
   title: string;
@@ -49,21 +64,22 @@ export const ArticleForm: React.FC<ArticleFormProps> = ({
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
-  const [showPreview, setShowPreview] = useState(true);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState({
     title: article?.title || "",
     slug: article?.slug || "",
     content: article?.content || "",
     excerpt: article?.excerpt || "",
-    category: article?.category || "",
+    category: article?.category || "Noutăți Legislative",
     tags: article?.tags?.join(", ") || "",
     coverImage: article?.coverImage || "",
-    status: article?.status || ("draft" as const),
+    status: article?.status || ("Draft" as const),
   });
 
+  // Generare automată URL (Slug) din titlu
   useEffect(() => {
-    if (!formData.slug && formData.title) {
+    if (!article && formData.title) {
       const slug = formData.title
         .toLowerCase()
         .normalize("NFD")
@@ -72,13 +88,32 @@ export const ArticleForm: React.FC<ArticleFormProps> = ({
         .replace(/^-|-$/g, "");
       setFormData((prev) => ({ ...prev, slug }));
     }
-  }, [formData.title]);
+  }, [formData.title, article]);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData((prev) => ({
+          ...prev,
+          coverImage: reader.result as string,
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeImage = () => {
+    setFormData((prev) => ({ ...prev, coverImage: "" }));
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
 
   const handleSubmit = async (status: "Draft" | "Published") => {
-    if (!formData.title || !formData.content || !formData.category) {
+    if (!formData.title || !formData.content) {
       toast({
-        title: "Eroare",
-        description: "Completează toate câmpurile obligatorii",
+        title: "Lipsesc date",
+        description: "Titlul și conținutul sunt obligatorii.",
         variant: "destructive",
       });
       return;
@@ -93,19 +128,20 @@ export const ArticleForm: React.FC<ArticleFormProps> = ({
           .split(",")
           .map((t) => t.trim())
           .filter(Boolean),
-        author: "Admin", // mock author
+        author: "Admin",
       });
 
       toast({
-        title: "Success",
+        title: "Succes",
         description:
-          status === "Published" ? "Articol publicat" : "Draft salvat",
+          status === "Published" ? "Publicat cu succes!" : "Salvat ca ciornă.",
+        className: "bg-green-50 border-green-200",
       });
       navigate("/admin/articles");
     } catch (error) {
       toast({
         title: "Eroare",
-        description: "Nu s-a putut salva articolul",
+        description: "Nu s-a putut salva articolul.",
         variant: "destructive",
       });
     } finally {
@@ -114,262 +150,211 @@ export const ArticleForm: React.FC<ArticleFormProps> = ({
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex gap-3 justify-between items-center mb-4 lg:hidden">
-        <Button
-          variant="outline"
-          onClick={() => setShowPreview(!showPreview)}
-          size="sm"
-        >
-          {showPreview ? (
-            <>
-              <EyeOff className="mr-2 h-4 w-4" />
-              Ascunde Preview
-            </>
-          ) : (
-            <>
-              <Eye className="mr-2 h-4 w-4" />
-              Arată Preview
-            </>
-          )}
-        </Button>
+    <div className="h-[calc(100vh-4rem)] flex flex-col overflow-hidden bg-gray-50/50">
+      {/* --- HEADER (Toolbar) --- */}
+      <div className="bg-white border-b px-6 py-3 flex items-center justify-between shrink-0 z-20 shadow-sm">
+        <div className="flex items-center gap-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate("/admin/articles")}
+          >
+            <ArrowLeft className="h-5 w-5 text-gray-500" />
+          </Button>
+          <span className="font-semibold text-lg text-gray-800">
+            {article ? "Editare Articol" : "Scrie Articol Nou"}
+          </span>
+        </div>
+        <div className="flex gap-3">
+          <Button
+            variant="outline"
+            onClick={() => handleSubmit("Draft")}
+            disabled={loading}
+          >
+            <Save className="mr-2 h-4 w-4" /> Salvează Ciornă
+          </Button>
+          <Button
+            onClick={() => handleSubmit("Published")}
+            disabled={loading}
+            className="bg-primary hover:bg-red-700 text-white"
+          >
+            <Globe className="mr-2 h-4 w-4" /> Publică
+          </Button>
+        </div>
       </div>
 
-      {/* Mobile view with tabs */}
-      <div className="lg:hidden">
-        <Tabs defaultValue="edit" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-4">
-            <TabsTrigger value="edit">Editare</TabsTrigger>
-            <TabsTrigger value="preview">Preview</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="edit">
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="title">Titlu *</Label>
-                <Input
-                  id="title"
-                  value={formData.title}
-                  onChange={(e) =>
-                    setFormData({ ...formData, title: e.target.value })
-                  }
-                  placeholder="Titlul articolului"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="slug">Slug</Label>
-                <Input
-                  id="slug"
-                  value={formData.slug}
-                  onChange={(e) =>
-                    setFormData({ ...formData, slug: e.target.value })
-                  }
-                  placeholder="slug-articol"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="category">Categorie *</Label>
-                <Select
-                  value={formData.category}
-                  onValueChange={(value) =>
-                    setFormData({ ...formData, category: value })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selectează categoria" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categories.map((cat) => (
-                      <SelectItem key={cat} value={cat}>
-                        {cat}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label htmlFor="tags-mobile">Tag-uri</Label>
-                <Input
-                  id="tags-mobile"
-                  value={formData.tags}
-                  onChange={(e) =>
-                    setFormData({ ...formData, tags: e.target.value })
-                  }
-                  placeholder="drept civil, contract, lege"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="excerpt-mobile">Extras</Label>
-                <Textarea
-                  id="excerpt-mobile"
-                  value={formData.excerpt}
-                  onChange={(e) =>
-                    setFormData({ ...formData, excerpt: e.target.value })
-                  }
-                  rows={3}
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="coverImage-mobile">Imagine copertă (URL)</Label>
-                <Input
-                  id="coverImage-mobile"
-                  value={formData.coverImage}
-                  onChange={(e) =>
-                    setFormData({ ...formData, coverImage: e.target.value })
-                  }
-                />
-              </div>
-
-              <div>
-                <Label>Conținut *</Label>
-                <RichTextEditor
-                  content={formData.content}
-                  onChange={(content) => setFormData({ ...formData, content })}
-                />
+      {/* --- MAIN CONTENT (SPLIT SCREEN) --- */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* STÂNGA: EDITOR (Scrollable) */}
+        <div className="flex-1 overflow-y-auto p-6 lg:p-10 border-r bg-white max-w-[55%]">
+          <div className="max-w-3xl mx-auto space-y-8">
+            {/* 1. TITLU */}
+            <div>
+              <Input
+                value={formData.title}
+                onChange={(e) =>
+                  setFormData({ ...formData, title: e.target.value })
+                }
+                placeholder="Titlul articolului..."
+                className="text-4xl font-serif font-bold border-none px-0 shadow-none focus-visible:ring-0 placeholder:text-gray-300 h-auto py-2 bg-transparent"
+              />
+              {/* URL (Slug) discret */}
+              <div className="flex items-center text-xs text-gray-400 mt-1 gap-2">
+                <span className="font-mono bg-gray-50 px-1 rounded">
+                  /noutati/{formData.slug}
+                </span>
               </div>
             </div>
-          </TabsContent>
 
-          <TabsContent value="preview">
-            <ArticlePreview
-              title={formData.title}
-              content={formData.content}
-              excerpt={formData.excerpt}
-              category={formData.category}
-              tags={formData.tags}
-              coverImage={formData.coverImage}
-              author="Admin"
-            />
-          </TabsContent>
-        </Tabs>
-      </div>
+            {/* 2. EDITOR DE TEXT */}
+            <div className="min-h-[400px]">
+              <RichTextEditor
+                content={formData.content}
+                onChange={(content) => setFormData({ ...formData, content })}
+              />
+            </div>
 
-      {/* Desktop view with side-by-side */}
-      <div className="hidden lg:grid lg:grid-cols-2 gap-6">
-        <div className="space-y-4">
-          <div>
-            <Label htmlFor="title-desktop">Titlu *</Label>
-            <Input
-              id="title-desktop"
-              value={formData.title}
-              onChange={(e) =>
-                setFormData({ ...formData, title: e.target.value })
-              }
-              placeholder="Titlul articolului"
-            />
-          </div>
+            {/* 3. SETĂRI (Collapsible pentru a nu aglomera) */}
+            <div className="pt-8 border-t">
+              <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value="settings" className="border-none">
+                  <AccordionTrigger className="text-lg font-semibold text-gray-800 hover:no-underline py-2">
+                    <div className="flex items-center gap-2">
+                      <Settings className="h-5 w-5 text-primary" />
+                      Setări Articol (Imagine, Categorie)
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="pt-4 space-y-6">
+                    {/* IMAGINE */}
+                    <Card>
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-sm flex items-center gap-2">
+                          <ImageIcon className="h-4 w-4 text-primary" /> Imagine
+                          Copertă
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        {formData.coverImage ? (
+                          <div className="relative group rounded-md overflow-hidden border h-48 w-full">
+                            <img
+                              src={formData.coverImage}
+                              alt="Cover"
+                              className="w-full h-full object-cover"
+                            />
+                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                              <Button
+                                variant="destructive"
+                                size="sm"
+                                onClick={removeImage}
+                              >
+                                <X className="mr-2 h-4 w-4" /> Șterge
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div
+                            onClick={() => fileInputRef.current?.click()}
+                            className="border-2 border-dashed border-gray-200 rounded-lg h-32 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 hover:border-primary/50 transition-all"
+                          >
+                            <Upload className="h-8 w-8 text-gray-300 mb-2" />
+                            <span className="text-sm text-gray-500">
+                              Click pentru a încărca o imagine
+                            </span>
+                          </div>
+                        )}
+                        <input
+                          type="file"
+                          ref={fileInputRef}
+                          className="hidden"
+                          accept="image/*"
+                          onChange={handleImageUpload}
+                        />
+                      </CardContent>
+                    </Card>
 
-          <div>
-            <Label htmlFor="slug-desktop">Slug</Label>
-            <Input
-              id="slug-desktop"
-              value={formData.slug}
-              onChange={(e) =>
-                setFormData({ ...formData, slug: e.target.value })
-              }
-              placeholder="slug-articol"
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="category-desktop">Categorie *</Label>
-            <Select
-              value={formData.category}
-              onValueChange={(value) =>
-                setFormData({ ...formData, category: value })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Selectează categoria" />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map((cat) => (
-                  <SelectItem key={cat} value={cat}>
-                    {cat}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div>
-            <Label htmlFor="tags-desktop">Tag-uri</Label>
-            <Input
-              id="tags-desktop"
-              value={formData.tags}
-              onChange={(e) =>
-                setFormData({ ...formData, tags: e.target.value })
-              }
-              placeholder="drept civil, contract, lege"
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="excerpt-desktop">Extras</Label>
-            <Textarea
-              id="excerpt-desktop"
-              value={formData.excerpt}
-              onChange={(e) =>
-                setFormData({ ...formData, excerpt: e.target.value })
-              }
-              rows={3}
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="coverImage-desktop">Imagine copertă (URL)</Label>
-            <Input
-              id="coverImage-desktop"
-              value={formData.coverImage}
-              onChange={(e) =>
-                setFormData({ ...formData, coverImage: e.target.value })
-              }
-            />
-          </div>
-
-          <div>
-            <Label>Conținut *</Label>
-            <RichTextEditor
-              content={formData.content}
-              onChange={(content) => setFormData({ ...formData, content })}
-            />
+                    {/* METADATA */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Categorie</Label>
+                        <Select
+                          value={formData.category}
+                          onValueChange={(v) =>
+                            setFormData({ ...formData, category: v })
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {categories.map((c) => (
+                              <SelectItem key={c} value={c}>
+                                {c}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Rezumat scurt (Excerpt)</Label>
+                        <Textarea
+                          rows={1}
+                          className="resize-none"
+                          placeholder="Max 150 caractere..."
+                          value={formData.excerpt}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              excerpt: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+                      {/* Input pentru tag-uri adăugat aici */}
+                      <div className="col-span-2 space-y-2">
+                        <Label>Tag-uri (separate prin virgulă)</Label>
+                        <Input
+                          value={formData.tags}
+                          onChange={(e) =>
+                            setFormData({ ...formData, tags: e.target.value })
+                          }
+                          placeholder="ex: civil, penal, 2024"
+                        />
+                      </div>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </div>
           </div>
         </div>
 
-        <div className="sticky top-6 h-fit">
-          <ArticlePreview
-            title={formData.title}
-            content={formData.content}
-            excerpt={formData.excerpt}
-            category={formData.category}
-            tags={formData.tags}
-            coverImage={formData.coverImage}
-            author="Admin"
-          />
-        </div>
-      </div>
+        {/* DREAPTA: LIVE PREVIEW (Sticky) */}
+        <div className="flex-1 overflow-y-auto bg-gray-100 p-6 lg:p-10 flex justify-center">
+          <div className="w-full max-w-2xl">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider flex items-center gap-2">
+                <Eye className="h-4 w-4" /> Live Preview
+              </h3>
+              <span className="text-xs text-gray-400">
+                Actualizare în timp real
+              </span>
+            </div>
 
-      <div className="flex gap-3 justify-end border-t pt-4">
-        <Button variant="outline" onClick={() => navigate("/admin/articles")}>
-          Anulează
-        </Button>
-        <Button
-          variant="outline"
-          onClick={() => handleSubmit("Draft")}
-          disabled={loading}
-        >
-          <Save className="mr-2 h-4 w-4" />
-          Salvează Draft
-        </Button>
-        <Button onClick={() => handleSubmit("Published")} disabled={loading}>
-          <Eye className="mr-2 h-4 w-4" />
-          Publică
-        </Button>
+            {/* Container Preview - Arată exact ca pe site */}
+            <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden min-h-[600px] pointer-events-none select-none ring-1 ring-black/5">
+              <ArticlePreview
+                title={formData.title || "Titlu Articol"}
+                content={formData.content || "<p>Începe să scrii...</p>"}
+                excerpt={formData.excerpt}
+                category={formData.category}
+                // MODIFICARE AICI: Trimitem string-ul direct, nu array
+                tags={formData.tags}
+                coverImage={formData.coverImage}
+                author="Admin"
+              />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -1,19 +1,33 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { useArticles } from "@/contexts/ArticlesContext"; // Păstrăm contextul doar pentru cache rapid
+import { useArticles } from "@/contexts/ArticlesContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, User, ArrowLeft, Tag } from "lucide-react";
+import { Calendar, User, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
+interface Article {
+  id: string | number;
+  title: string;
+  content: string;
+  category: string;
+  author: string;
+  coverImage?: string;
+  cover_image?: string;
+  publishedAt?: string;
+  createdAt?: string;
+  created_at?: string;
+  published_at?: string;
+  status?: string;
+}
+
 export const ArticleDetail: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
-  const { articles } = useArticles(); // Folosim contextul doar pentru verificare inițială
+  const { articles } = useArticles();
   const { language } = useLanguage();
 
-  // State local pentru articolul curent (pentru a gestiona refresh-ul independent de context)
-  const [article, setArticle] = useState<any>(null);
+  const [article, setArticle] = useState<Article | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
 
@@ -23,29 +37,43 @@ export const ArticleDetail: React.FC = () => {
     const fetchArticleData = async () => {
       if (!slug) return;
 
+      // --- FIX CRITIC AICI ---
+      // Eliminăm extensia .html din URL dacă există, pentru a găsi articolul în DB
+      const cleanSlug = slug.replace(/\.html$/, "");
+
       setIsLoading(true);
       setError(false);
 
-      // 1. Încercăm să luăm din Context (dacă utilizatorul a navigat din listă)
-      const contextArticle = articles.find((a) => a.slug === slug);
+      const normalizeArticle = (data: any): Article => {
+        return {
+          ...data,
+          coverImage: data.coverImage || data.cover_image || "",
+          publishedAt:
+            data.publishedAt ||
+            data.published_at ||
+            data.createdAt ||
+            data.created_at,
+        };
+      };
 
+      // 1. Verificăm în Context folosind slug-ul curat
+      const contextArticle = articles.find((a) => a.slug === cleanSlug);
       if (contextArticle) {
-        setArticle(contextArticle);
+        setArticle(normalizeArticle(contextArticle));
         setIsLoading(false);
         return;
       }
 
-      // 2. Dacă nu e în context (refresh pagină), luăm de la API
+      // 2. Fetch API folosind slug-ul curat
       try {
-        const response = await fetch(`${API_URL}/articles/slug/${slug}`);
+        const response = await fetch(`${API_URL}/articles/slug/${cleanSlug}`);
 
         if (!response.ok) {
           throw new Error("Article not found");
         }
 
         const data = await response.json();
-        // Backend-ul tău returnează obiectul direct (conform codului main.py: return article)
-        setArticle(data);
+        setArticle(normalizeArticle(data));
       } catch (err) {
         console.error("Failed to fetch article:", err);
         setError(true);
@@ -57,7 +85,14 @@ export const ArticleDetail: React.FC = () => {
     fetchArticleData();
   }, [slug, articles, API_URL]);
 
-  // --- UI: LOADING STATE ---
+  const getTitleImageSrc = (imgString: string) => {
+    if (!imgString) return "";
+    if (imgString.startsWith("http") || imgString.startsWith("data:")) {
+      return imgString;
+    }
+    return `data:image/jpeg;base64,${imgString}`;
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background pt-20 sm:pt-24">
@@ -65,13 +100,7 @@ export const ArticleDetail: React.FC = () => {
           <Skeleton className="h-10 w-32 mb-6" />
           <Skeleton className="w-full aspect-video rounded-lg mb-8" />
           <Skeleton className="h-8 w-48 mb-4" />
-          <Skeleton className="h-12 w-3/4 mb-6" />
-          <div className="flex gap-4 mb-8">
-            <Skeleton className="h-6 w-32" />
-            <Skeleton className="h-6 w-32" />
-          </div>
           <div className="space-y-4">
-            <Skeleton className="h-4 w-full" />
             <Skeleton className="h-4 w-full" />
             <Skeleton className="h-4 w-5/6" />
           </div>
@@ -80,7 +109,6 @@ export const ArticleDetail: React.FC = () => {
     );
   }
 
-  // --- UI: NOT FOUND STATE ---
   if (error || !article) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center px-4 pt-20">
@@ -102,11 +130,9 @@ export const ArticleDetail: React.FC = () => {
     );
   }
 
-  // --- UI: SUCCESS STATE ---
   return (
     <div className="min-h-screen bg-background pt-20 sm:pt-24 animate-in fade-in duration-500">
       <div className="container mx-auto px-4 sm:px-6 py-8 max-w-4xl">
-        {/* Back Button */}
         <Button
           variant="ghost"
           asChild
@@ -119,16 +145,10 @@ export const ArticleDetail: React.FC = () => {
         </Button>
 
         <article>
-          {/* Cover Image */}
           {article.coverImage && (
-            <div className="w-full overflow-hidden rounded-xl mb-8 sm:mb-10 shadow-lg">
+            <div className="w-full overflow-hidden rounded-xl mb-8 sm:mb-10 shadow-lg border border-gray-100">
               <img
-                src={
-                  article.coverImage.startsWith("http") ||
-                  article.coverImage.startsWith("data:")
-                    ? article.coverImage
-                    : `data:image/jpeg;base64,${article.coverImage}`
-                }
+                src={getTitleImageSrc(article.coverImage)}
                 alt={article.title}
                 className="w-full h-auto max-h-[500px] object-cover object-center"
                 onError={(e) => {
@@ -138,13 +158,12 @@ export const ArticleDetail: React.FC = () => {
             </div>
           )}
 
-          {/* Header Info */}
           <div className="mb-8 sm:mb-10 border-b pb-8">
             <div className="flex flex-wrap items-center gap-3 mb-4">
               <Badge className="px-3 py-1 text-sm bg-primary/10 text-primary hover:bg-primary/20 border-none">
                 {article.category}
               </Badge>
-              {article.status === "draft" && (
+              {article.status?.toLowerCase() === "draft" && (
                 <Badge variant="destructive">Draft</Badge>
               )}
             </div>
@@ -157,25 +176,27 @@ export const ArticleDetail: React.FC = () => {
               <div className="flex items-center gap-2">
                 <User className="h-4 w-4 text-primary" />
                 <span className="font-medium text-foreground/80">
-                  {article.author}
+                  {article.author || "Frunză & Asociații"}
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4 text-primary" />
                 <span>
-                  {new Date(
-                    article.publishedAt || article.createdAt
-                  ).toLocaleDateString(language === "ro" ? "ro-RO" : "en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
+                  {article.publishedAt
+                    ? new Date(article.publishedAt).toLocaleDateString(
+                        language === "ro" ? "ro-RO" : "en-US",
+                        {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        }
+                      )
+                    : "N/A"}
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Content */}
           <div
             className="prose prose-lg sm:prose-xl dark:prose-invert max-w-none
               prose-headings:font-serif prose-headings:font-bold
@@ -184,24 +205,6 @@ export const ArticleDetail: React.FC = () => {
               prose-img:rounded-lg prose-img:shadow-md"
             dangerouslySetInnerHTML={{ __html: article.content }}
           />
-
-          {/* Footer Tags */}
-          {article.tags && article.tags.length > 0 && (
-            <div className="mt-12 pt-8 border-t">
-              <div className="flex items-center gap-3 flex-wrap">
-                <Tag className="h-4 w-4 text-muted-foreground" />
-                {article.tags.map((tag: string) => (
-                  <Badge
-                    key={tag}
-                    variant="outline"
-                    className="hover:bg-secondary transition-colors"
-                  >
-                    {tag}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          )}
         </article>
       </div>
     </div>

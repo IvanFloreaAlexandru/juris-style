@@ -359,6 +359,7 @@ export default function PracticeAreaDetail() {
         title={t(practiceArea.title, practiceArea.titleEn)}
         titleEn={practiceArea.titleEn}
         language={language}
+        align="center"
       />
 
       {/* Content Section */}

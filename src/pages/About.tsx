@@ -113,7 +113,10 @@ export default function About() {
     },
     {
       icon: Gavel,
-      title: language === "ro" ? "Drept Penal" : "Criminal Law",
+      title:
+        language === "ro"
+          ? "Drept penal. Latura civilă a dreptului penal"
+          : "Criminal Law. The Civil Side of Criminal Law",
       id: "drept-penal",
     },
     {
