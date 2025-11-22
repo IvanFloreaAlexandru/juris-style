@@ -30,15 +30,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
       const response = await loginAPI(email, password);
-      
+
       if (response.access_token) {
         const userData = { email, name: "Administrator" };
         setUser(userData);
         setIsAuthenticated(true);
+
         localStorage.setItem("admin_user", JSON.stringify(userData));
+
+        localStorage.setItem("jwt_token", response.access_token);
+
         return true;
       }
-      
+
       return false;
     } catch (error) {
       console.error("Login error:", error);
